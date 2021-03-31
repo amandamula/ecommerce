@@ -1,0 +1,68 @@
+.fitxa{
+    margin-top: 3%;
+}
+.breadcrumb{
+    background-color: inherit !important;
+    color: black !important;
+    font-size: 12px;
+}
+
+.breadcrumb-item a{
+    background-color: inherit !important;
+    color: black !important;
+}
+
+.breadcrumb-item.active{
+    background-color: inherit !important;
+    color: black !important;
+
+}
+
+.titolFitxa{
+    text-align: initial;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding-left: 0.75rem;
+}
+
+.descripcioFitxa{
+    text-align: initial;
+    color: #797979;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    padding-left: 0.75rem;
+}
+
+.preuFitxa{
+    text-align: initial;
+    padding-left: 0.75rem;
+    font-size: 2rem;
+    font-weight: 500;
+
+}
+
+.ivaFitxa{
+    text-align: initial;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #797979;
+    padding-left: 0.75rem;
+
+}
+
+.rowPreu{
+    padding-left: 0.75rem;
+    margin-top: 20px;
+    text-align: initial;
+    
+}
+
+.number:focus{
+    
+    border-color:  #790726 !important;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6);
+  
+}
