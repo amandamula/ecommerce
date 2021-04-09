@@ -8,6 +8,10 @@
   pointer-events: none;
 }
 
+.btn-primary:hover{
+background-color: white!important;
+color: #790726 !important;
+}
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

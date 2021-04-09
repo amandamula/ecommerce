@@ -1,12 +1,15 @@
-import logo from './logo.svg';
+
 import './App.css';
-import { BrowserRouter as Router, Route, useHistory, Redirect, withRouter } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import Index from './pages/Index';
 import Fitxa from './pages/Fitxa';
 import './Custom.scss';
 import IdiomaContext from './context/IdiomaContext';
-import react, { Component } from 'react';
+import { Component } from 'react';
 import Carrito from './pages/Carrito';
+import FormulariPedido from './pages/FormulariPedido';
+import Formulari from './pages/Formulari';
+import Pag from './pages/Pagament';
 
 
 class App extends Component {
@@ -15,9 +18,15 @@ class App extends Component {
     super(props);
 
     var count = 0;
+    var totalCarrito = 0;
 
     if (localStorage.getItem("count") !== null) {
       count = parseInt(localStorage.getItem("count"))
+
+    }
+
+    if (localStorage.getItem("total") !== null) {
+      totalCarrito = localStorage.getItem("total");
 
     }
 
@@ -26,13 +35,19 @@ class App extends Component {
       error: false,
       llenguatge: "",
       carritoCount: count,
+      total : totalCarrito,
+    
 
     };
 
 
     this.afegirCistella = this.afegirCistella.bind(this);
+    this.actualizarContador = this.actualizarContador.bind(this);
+    this.borrarProducte = this.borrarProducte.bind(this);
+    this.borrarTot = this.borrarTot.bind(this);
+    this.calcularTotal = this.calcularTotal.bind(this);
 
-
+    //Agafam l'idioma per defecte del navegador, sempre el localStorage sigui buit.
 
     if (localStorage.getItem("idioma") === null) {
 
@@ -56,6 +71,7 @@ class App extends Component {
   }
 
 
+  //Funció per canviar l'idioma.
   canviarLlenguatge = (id) => {
     localStorage.setItem("idioma", id);
     this.setState({
@@ -63,10 +79,11 @@ class App extends Component {
     });
   };
 
-  trobarArticleCart(productes,id){
+  //Funció per trobar un article dins l'array del carretó.
+  trobarArticleCart(productes, id) {
 
-    for(var i = 0; i < productes.length; i++){
-      if(productes[i][0] === id){
+    for (var i = 0; i < productes.length; i++) {
+      if (productes[i][0] === id) {
         return i;
       }
     }
@@ -74,37 +91,107 @@ class App extends Component {
     return -1;
   }
 
-  afegirCistella(id, quant) {
-   
+  // Funció per contar la quantitat total d'articles dins la cistella.
+  contarArticles() {
+    const productes = JSON.parse(localStorage.getItem("productesCart"));
+    let count = 0;
+    for (var i = 0; i < productes.length; i++) {
+      count = count + productes[i][1];
 
-    const count = this.state.carritoCount;
+    }
 
-    const c = count + quant;
+    return count;
+  }
 
-    this.setState({ carritoCount: c })
-    localStorage.setItem("count", c);
+  // Afegir un producte dins la cistella.
+  afegirCistella(id, quant, preu) {
 
-    if(localStorage.getItem("productesCart") === null){
-      const productes = [[id,quant]];
-      localStorage.setItem("productesCart",JSON.stringify(productes));
-    }else{
+
+    if (localStorage.getItem("productesCart") === null) {
+      const productes = [[id, quant, preu]];
+      localStorage.setItem("productesCart", JSON.stringify(productes));
+    } else {
 
       const productesCart = JSON.parse(localStorage.getItem("productesCart"));
-      const trobat = this.trobarArticleCart(productesCart,id);
+      const trobat = this.trobarArticleCart(productesCart, id);
 
-      if(trobat >= 0){
-        productesCart[trobat][1]+= quant;
+      if (trobat >= 0) {
+        productesCart[trobat][1] += quant;
 
-      }else{
-        productesCart.push([id,quant]);
+      } else {
+        productesCart.push([id, quant, preu]);
 
       }
 
-      localStorage.setItem("productesCart",JSON.stringify(productesCart));
+      localStorage.setItem("productesCart", JSON.stringify(productesCart));
+   
     }
+
+    const contador = this.contarArticles();
+    this.setState({ carritoCount: contador })
+    localStorage.setItem("count", contador);
+    this.calcularTotal();
 
 
   }
+
+  // Funció per actualitzar el contador del total darticles de dins la cistella.
+
+  actualizarContador() {
+    const contador = this.contarArticles();
+    this.setState({ carritoCount: contador })
+    localStorage.setItem("count", contador);
+  }
+
+
+  // Funció per borrar un article seleccionat de dins l'array de la cistella.
+
+  borrarProducte(codi) {
+    const productesCart = JSON.parse(localStorage.getItem("productesCart"));
+    const trobat = this.trobarArticleCart(productesCart, codi);
+
+
+    if (trobat >= 0) {
+
+      productesCart.splice(trobat, 1);
+
+    }
+
+    localStorage.setItem("productesCart", JSON.stringify(productesCart));
+    const contador = this.contarArticles();
+    this.setState({ carritoCount: contador })
+    localStorage.setItem("count", contador);
+    this.calcularTotal();
+    window.location.reload();
+
+
+  }
+
+  //Funció per eliminar tots els productes de la cistella
+
+  borrarTot() {
+    localStorage.removeItem("productesCart");
+    localStorage.removeItem("count");
+    window.location.reload();
+  }
+
+  //Funció per calcular el total
+  calcularTotal(){
+
+    const productes = JSON.parse(localStorage.getItem("productesCart"));
+    let total = 0;
+    for (var i = 0; i < productes.length; i++) {
+      total = total + (productes[i][2] * productes[i][1]);
+
+    }
+
+    localStorage.setItem("total",total.toFixed(2));
+    this.setState({total : total.toFixed(2)});
+    return total;
+}
+
+
+  
 
   render() {
     return (
@@ -115,10 +202,13 @@ class App extends Component {
           <div className="App">
             <Route exact path="/" render={() => <Index key={"Index-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} count={this.state.carritoCount} />} />
             <Route exact path="/familia/:codiFam" render={() => <Index key={"Index-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} count={this.state.carritoCount} />} />
-            <Route path="/producte/:codi" render={() => <Fitxa key={"Fitxa-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella}  count={this.state.carritoCount} />} />
-            <Route path="/producte/:codi" render={() => <Fitxa key={"Fitxa-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella}  count={this.state.carritoCount} />} />
-            <Route path="/carrito" render={() => <Carrito key={"Carrito-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella}  count={this.state.carritoCount} />} />
+            <Route path="/producte/:codi" render={() => <Fitxa key={"Fitxa-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} count={this.state.carritoCount} />} />
+            <Route exact path="/carrito" render={() => <Carrito key={"Carrito-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
+          
 
+            <Route exact path="/pedido" render={() => <FormulariPedido key={"Formulari-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
+            <Route exact path="/carrito/pedido" render={() => <Formulari key={"Formulari-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
+            <Route exact path="/pag" render={() => <Pag key={"Formulari-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
 
 
           </div>

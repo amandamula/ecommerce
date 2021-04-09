@@ -7,7 +7,16 @@
     "index.titulo" : "Products La Luna",
     "card.informacion" : "More information",
     "fitxa.iva" : "VAT included",
-    "fitxa.añadir" :  "Add to cart"
+    "fitxa.añadir" :  "Add to cart",
+    "carrito.carrito" : "CART",
+    "carrito.quant" : "Quantity",
+    "carrito.eliminar" : "Remove",
+    "carrito.vaciar" : "Empty cart",
+    "carrito.seguirComprant" : "Continue Buying",
+    "carrito.total" : "Total",
+    "carrito.productes": "products",
+    "carrito.comprar": "Place order"
+
 
 
 }

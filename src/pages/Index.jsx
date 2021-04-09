@@ -40,7 +40,7 @@ class Index extends Component {
     async componentDidMount() {
 
         const lang = localStorage.getItem("idioma");
-
+      
 
         const res = await axios.get('https://aguilo.limit.es/api/auth?user=adminaguilo&pass=adminaguilo', {
 

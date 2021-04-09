@@ -7,7 +7,16 @@
     "index.titulo" : "Productes La Luna",
     "card.informacion" : "Veure informació",
     "fitxa.iva" : "IVA inclòs",
-    "fitxa.añadir" :  "Afegir a la cistella"
+    "fitxa.añadir" :  "Afegir a la cistella",
+    "carrito.carrito" : "CISTELLA",
+    "carrito.quant" : "Quantitat",
+    "carrito.eliminar" : "Eliminar",
+    "carrito.vaciar" : "Buidar cistella",
+    "carrito.seguirComprant" : "Seguir comprant",
+    "carrito.total" : "Total",
+    "carrito.productes": "productes",
+    "carrito.comprar": "Realitzar compra"
+
 
 
 }

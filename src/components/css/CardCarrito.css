@@ -1,4 +1,28 @@
 .cardCarrito{
- max-height: 180px; 
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    border-top: none;
+    margin-top: 2%;
+    
 }
+
+.imatgeCart{
+  
+    margin-top:20%;
+}
+
+.informacioCart{
+    text-align: start;
+}
+
+.titolCard{
+    margin-bottom: 0;
+}
+
+.label{
+    margin-top:6px;
+}
+
+
 

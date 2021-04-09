@@ -1,5 +1,9 @@
 .cardsCart{
     margin-top: 50px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 5%;
+
+
 }
 
 .titolCart{
@@ -12,3 +16,35 @@
 .card-img{
     max-width: 60%;
 }
+
+
+.resumCart{
+    margin-top: 50px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 5%;
+    height: 250px;
+    padding-top: 41px;
+    
+
+
+}
+
+.accionsCart{
+    padding:5%;
+}
+
+.titolCartBuid{
+    text-align: center !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-top: 5%;
+
+}
+
+
+.titolResum{
+    letter-spacing: 1px;
+
+}
+
+

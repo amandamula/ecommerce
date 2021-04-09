@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import Traduccio from '../components/Traduccio';
 import './css/Card.css';
@@ -30,9 +29,9 @@ class CardIndex extends Component {
                 <div className="card cards" >
                     <header className="card_header">
 
-                        <img src={"https://aguilo-botiga.limit.es/api/ecomfront/image/show/" + this.props.imatge} className="card-img-top h-100" />
+                        <img src={"https://aguilo-botiga.limit.es/api/ecomfront/image/show/" + this.props.imatge} className="card-img-top h-100" alt={this.props.desc} />
                         <div className="card-img-overlay">
-                            <a className="text-primary botoCart" onClick={() => this.props.afegirCistella(this.props.codi, 1)}><AddShoppingCartIcon /></a>
+                            <a className="text-primary botoCart" onClick={() => this.props.afegirCistella(this.props.codi, 1, this.state.preu)}><AddShoppingCartIcon /></a>
 
                         </div>
 

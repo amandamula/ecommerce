@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import axios from 'axios';
 
 import Header from '../components/HeaderNou';
@@ -50,6 +50,21 @@ class Fitxa extends Component {
 
         const lang = localStorage.getItem("idioma");
 
+        const resposta = await axios({
+            method: 'post',
+            url: 'https://aguilo.limit.es/api/auth/refresh',
+            data: {
+                token: localStorage.getItem("token"),
+                session: { e: "645", i: "643" },
+
+            },
+            headers: { "Authorization": `${localStorage.getItem("tokenType")} ${localStorage.getItem("token")}` }
+        });
+
+        const tokenRefresh = resposta.data;
+        localStorage.setItem("resposta", tokenRefresh.token)
+
+
 
         const res = await axios.get(`https://aguilo.limit.es/api/ecom/articlesInformacio?query=article.codi==${this.state.codi}&page=0&size=100&lang=${lang}`, {
             headers: { "Authorization": `Bearer ${localStorage.getItem("resposta")}` }
@@ -87,7 +102,7 @@ class Fitxa extends Component {
                                     {this.state.info.map(function (articles, index) {
                                         return (
                                             <div>
-                                                <img src={"https://aguilo-botiga.limit.es/api/ecomfront/image/show/" + articles.rutaInforme} />
+                                                <img src={"https://aguilo-botiga.limit.es/api/ecomfront/image/show/" + articles.rutaInforme} alt={articles.descripcio}/>
                                             </div>
 
                                         );
@@ -121,7 +136,7 @@ class Fitxa extends Component {
                                                 <input type="number" min="1" className="form-control number" defaultValue="1" onChange={(e) => this.handleChange(parseInt(e.target.value))}/>
                                             </div>
                                             <div className="col-9 col-sm-6">
-                                                <button className="btn btn-outline-primary col" onClick={() => this.props.afegirCistella(this.state.codi, this.state.quant)}><Traduccio string="fitxa.añadir"/></button>
+                                                <button className="btn btn-outline-primary col" onClick={() => this.props.afegirCistella(this.state.codi, this.state.quant,this.state.preu)}><Traduccio string="fitxa.añadir"/></button>
                                             </div>
                                         </div>
 

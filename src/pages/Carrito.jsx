@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
+
 import Traduccio from '../components/Traduccio';
-import axios from 'axios';
+
 
 import Header from '../components/HeaderNou';
 import CardCarrito from '../components/CardCarrito';
-import './css/Carrito.css'
+import './css/Carrito.css';
+import DeleteForeverOutlinedIcon from '@material-ui/icons/DeleteForeverOutlined';
+import { withRouter, Link } from 'react-router-dom';
+
+
 
 
 
@@ -16,79 +19,87 @@ class Carrito extends Component {
         super(props);
         this.state = {
             productes: [],
-            imatge: "",
-            preu: "",
-            quant: "",
-            titol: "",
-            desc: "",
-            info: [],
-            infoProducte: []
+
+
         }
 
-        this.mostrarDetallsProducte = this.mostrarDetallsProducte.bind(this);
+
     }
 
-    componentDidMount() {
 
+
+    async componentDidMount() {
 
         const productes = JSON.parse(localStorage.getItem("productesCart"));
+
         this.setState({ productes: productes });
 
 
-    }
-
-
-    async mostrarDetallsProducte(codi) {
-
-        const lang = localStorage.getItem("idioma");
-
-
-        const res = await axios.get(`https://aguilo.limit.es/api/ecom/articlesInformacio?query=article.codi==${codi}&page=0&size=100&lang=${lang}`, {
-            headers: { "Authorization": `Bearer ${localStorage.getItem("resposta")}` }
-        });
-
-        const info = res.data;
-
-        const id = info._embedded.articleInformacios[0].article.id;
-
-        const resp = await axios.get(`https://aguilo.limit.es/api/ecomfront/articles/detail/${id}?lang=${lang}`, {
-            headers: { "Authorization": `Bearer ${localStorage.getItem("resposta")}` }
-        });
-
-        const infoProd = resp.data;
-
-        const preu = infoProd.preuAmbIva.toFixed(2);
-
-
-        this.setState({ info: info._embedded.articleInformacios, infoProducte: infoProd, preu: preu });
 
     }
+
+
+
 
 
     render() {
-        if (this.state.productes.length >= 0) {
+
+        const that = this;
+
+
+        if (this.state.productes !== null && localStorage.getItem("count") > 0) {
+
             return (
                 <div>
                     <Header canviarLlenguatge={this.props.canviarLlenguatge} count={this.props.count} />
+                    <div className="container">
+                        <div className="row">
+                            <div className="col-sm-12 col-md-12 col-lg-9">
 
-                    <div className="container cardsCart">
-                        <h4 className="titolCart">CARRITO {this.state.productes}</h4>
 
-                        {this.state.productes.map(function (articles, index) {
-                            
-                            const artic = articles.map(function (art){
-                                return (
-                                    <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
-    
-                                        <h6>{articles[0][0]} </h6>
+                                <div className="container cardsCart">
+                                    <h4 className="titolCart"><Traduccio string="carrito.carrito" /></h4>
+
+                                    {this.state.productes.map(function (articles, index) {
+
+
+                                        return (
+                                            <div className="col-12">
+                                                <CardCarrito codi={articles[0]} quant={articles[1]} contador={that.props.contador} eliminar={that.props.eliminar} calcularTotal={that.props.calcularTotal} />
+                                            </div>
+
+                                        );
+
+
+
+                                    })}
+                                    <div className="row accionsCart">
+                                        <div className="mr-auto">
+                                            <button className="btn btn-outline-primary" onClick={() => this.props.eliminarTots()}> <DeleteForeverOutlinedIcon fontSize="small" className="mr-1 mb-1" /><Traduccio string="carrito.vaciar" /></button>
+                                        </div>
+                                        <div className="ml-auto">
+                                            <a href="/" className="btn btn-primary"><Traduccio string="carrito.seguirComprant" /></a>
+                                        </div>
                                     </div>
-    
-                                );
+                                </div>
+                            </div>
+                            <div className="col-sm-12 col-md-12 col-lg-3">
+                                <div className="container resumCart">
+                                    <div className="container">
+                                        <h5 className="titolResum"><strong><Traduccio string="carrito.total" /> : </strong></h5>
+                                        <h5>({this.props.count} <Traduccio string="carrito.productes" /> )</h5>
+                                        <h2 className="preuFitxa text-primary text-center">{this.props.total} €</h2>
+                                        <div className="row">
 
-                            });
+                                            <a href="/carrito/pedido" className="btn btn-primary mt-3 col" ><Traduccio string="carrito.comprar" /></a>
 
-                            })}
-                       </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             );
@@ -99,11 +110,25 @@ class Carrito extends Component {
             return (
                 <div>
                     <Header canviarLlenguatge={this.props.canviarLlenguatge} count={this.props.count} />
-                    <h6> CAP PRODUCTE</h6>
+                    <div className="container cardsCart">
+
+                        <h4 className="titolCart"><Traduccio string="carrito.carrito" /></h4>
+
+                        <h6 className="titolCartBuid"> La teva cistella està buida.</h6>
+                        <a href="/" className="btn btn-primary mt-3 mb-5"> Veure Articles</a>
+
+                    </div>
+
                 </div>
             );
         }
+
+
+
+
+
+
     }
 }
 
-export default Carrito;
+export default withRouter(Carrito);
