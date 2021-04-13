@@ -1,0 +1,34 @@
+.paytpv_fs label{
+    color: red !important;
+}
+
+
+.paytpv_fs input,.paytpv_fs select {
+    font-family: Raleway,sans-serif;
+    color: red !important;
+}
+
+
+#btnforg{
+    background-color: rosybrown !important;
+}
+
+
+.paytpv_fs #btnforg {
+
+    background-color: rosybrown !important;
+    color: aqua !important;
+}
+
+input.button {
+    background-color: rosybrown !important;
+    color: aqua !important;
+
+}
+
+#formulario .button{
+
+background-color: rosybrown !important;
+color: aqua !important;
+}
+

@@ -38,13 +38,17 @@ class Index extends Component {
     }
 
     async componentDidMount() {
-
+        
+        //Peticions de token, de refreshToken, de articles, de Families d'articles 
+        // i finalment, dels articles filtrat per familia.
+        
         const lang = localStorage.getItem("idioma");
       
 
         const res = await axios.get('https://aguilo.limit.es/api/auth?user=adminaguilo&pass=adminaguilo', {
 
         });
+
 
         const token = res.data;
 

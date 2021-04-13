@@ -2,7 +2,6 @@ import React, { Component } from "react";
 
 import "./css/Llista.css";
 import $ from "jquery";
-import Icon from "../components/Icon";
 import Traduccio from "../components/Traduccio";
 import KeyboardArrowDownOutlinedIcon from "@material-ui/icons/KeyboardArrowDownOutlined";
 

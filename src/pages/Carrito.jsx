@@ -30,6 +30,8 @@ class Carrito extends Component {
 
     async componentDidMount() {
 
+        
+
         const productes = JSON.parse(localStorage.getItem("productesCart"));
 
         this.setState({ productes: productes });

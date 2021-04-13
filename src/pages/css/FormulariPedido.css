@@ -14,6 +14,8 @@
 }
 
 
+
+
 .input:focus{
     
     border-color:  #790726 !important;
@@ -62,3 +64,29 @@
 .preuTotal{
   text-align: end !important;
 }
+
+.linkAcordeon{
+  font-size: 1.25rem;
+}
+
+
+.linkAcordeon:hover{
+  text-decoration: none;
+  color: #790726;
+
+}
+.card{
+  border-radius: 0%  !important;
+  border-bottom: none;
+  background-color: white;
+}
+
+.card:last-child {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.card-header{
+  background-color: white;
+}
+
+

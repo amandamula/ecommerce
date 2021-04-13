@@ -39,6 +39,7 @@ class Fitxa extends Component {
         this.handleChange = this.handleChange.bind(this);
     }
 
+    // Agafam la quantitat del producte.
 
     handleChange(valor){
 
@@ -47,6 +48,8 @@ class Fitxa extends Component {
     }
 
     async componentDidMount() {
+
+        // Peticions de la informació de l'articles i de les imatges.
 
         const lang = localStorage.getItem("idioma");
 
