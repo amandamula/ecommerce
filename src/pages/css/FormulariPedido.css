@@ -13,9 +13,6 @@
 
 }
 
-
-
-
 .input:focus{
     
     border-color:  #790726 !important;
@@ -89,4 +86,14 @@
   background-color: white;
 }
 
+
+.info{
+  text-align: start;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+}
+
+.upper{
+  text-transform: uppercase;
+}
 

@@ -29,13 +29,7 @@ class LlistaPedido extends Component {
         const lang = localStorage.getItem("idioma");
 
 
-        const res = await axios.get(`https://aguilo.limit.es/api/ecom/articlesInformacio?query=article.codi==${this.props.codi}&page=0&size=100&lang=${lang}`, {
-            headers: { "Authorization": `Bearer ${localStorage.getItem("resposta")}` }
-        });
-
-        const info = res.data;
-
-        const id = info._embedded.articleInformacios[0].article.id;
+        const id = this.props.id;
 
         const resp = await axios.get(`https://aguilo.limit.es/api/ecomfront/articles/detail/${id}?lang=${lang}`, {
             headers: { "Authorization": `Bearer ${localStorage.getItem("resposta")}` }

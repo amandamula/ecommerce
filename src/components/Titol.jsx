@@ -4,7 +4,7 @@ import './css/Llista.css';
 
 
 
-class List extends Component {
+class Titol extends Component {
 
     constructor(props) {
         super();
@@ -29,4 +29,4 @@ class List extends Component {
 }
 
 
-export default List;
+export default Titol;

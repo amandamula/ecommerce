@@ -58,14 +58,7 @@ function NouHeader(props) {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent" >
                     <ul className="navbar-nav ml-auto">
 
-                        <li className="nav-item">
-                            <div className="dropdown">
-                                <a className="nav-link link mr-4">
-                                    <PersonOutlineIcon /> amula@limit.es
-                                </a>
-
-                            </div>
-                        </li>
+                    
                         <li className="nav-item">
                             <div className="dropdown">
                                 <button className="btn dropdown-toggle mr-4" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

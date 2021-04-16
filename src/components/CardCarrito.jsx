@@ -36,6 +36,7 @@ class CardCarrito extends Component {
         const preuNou = this.state.preu * valor;
         this.setState({ preuTotalProducte: preuNou.toFixed(2) })
         this.actualitzarCart(codi, valor);
+
    
 
         
@@ -47,7 +48,7 @@ class CardCarrito extends Component {
     trobarArticleCart(productes, id) {
 
         for (var i = 0; i < productes.length; i++) {
-            if (productes[i][0] === id) {
+            if (productes[i]["codi"] === id) {
                 return i;
             }
         }
@@ -67,17 +68,18 @@ class CardCarrito extends Component {
 
             if (trobat >= 0) {
                
-                productesCart[trobat][1] = quant;
+                productesCart[trobat]["unitats"] = quant;
 
             } else {
               
-                productesCart.push([codi, quant]);
+                productesCart.push({"codi" : codi , "unitats" : quant});
 
             }
 
             localStorage.setItem("productesCart", JSON.stringify(productesCart));
             this.props.contador();
             this.props.calcularTotal();
+        
           
 
 
@@ -88,26 +90,19 @@ class CardCarrito extends Component {
 
     async componentDidMount() {
 
-
         const lang = localStorage.getItem("idioma");
 
+        
 
-        const res = await axios.get(`https://aguilo.limit.es/api/ecom/articlesInformacio?query=article.codi==${this.props.codi}&page=0&size=100&lang=${lang}`, {
-            headers: { "Authorization": `Bearer ${localStorage.getItem("resposta")}` }
-        });
-
-        const info = res.data;
-
-        const id = info._embedded.articleInformacios[0].article.id;
-        const imatge = info._embedded.articleInformacios[0].rutaInforme;
-
-        const resp = await axios.get(`https://aguilo.limit.es/api/ecomfront/articles/detail/${id}?lang=${lang}`, {
-            headers: { "Authorization": `Bearer ${localStorage.getItem("resposta")}` }
+        const resp = await axios.get(`https://aguilo.limit.es/api/ecomfront/articles/detail/${this.props.id}?lang=${lang}`, {
+            headers: { "Authorization": `${localStorage.getItem("tokenType")} ${localStorage.getItem("resposta")}` }
         });
 
         const infoProd = resp.data;
 
-        const preu = infoProd.preuAmbIva.toFixed(2);
+        const preuTotal = infoProd.preuAmbIva * this.props.quant;
+
+       
         const titol = infoProd.descripcioCurta;
 
         let desc = "";
@@ -119,14 +114,9 @@ class CardCarrito extends Component {
              desc = infoProd.descripcio;
 
         }
-        
 
 
-
-        this.setState({ imatge: imatge, familia: infoProd.familia.description, codiFam: infoProd.familia.pk.codi, preu: preu, titol: titol, desc: desc, quant: this.props.quant, codi: infoProd.codi });
-        const preuTotal = preu * this.state.quant;
-
-        this.setState({ preuTotalProducte: preuTotal.toFixed(2) });
+        this.setState({ preu : infoProd.preuAmbIva.toFixed(2) ,preuTotalProducte: preuTotal.toFixed(2), titol : titol , desc : desc });
 
 
     }
@@ -140,23 +130,23 @@ class CardCarrito extends Component {
                 <div className="card cardCarrito" >
                     <div className="row">
                         <div className="col-md-4 col-lg-3 col-xl-3">
-                            <a href={"producte/" + this.state.codi}>
-                                <img src={"https://aguilo-botiga.limit.es/api/ecomfront/image/show/" + this.state.imatge} className="img-fluid imatgeCart" alt={this.props.desc} />
+                            <a href={"producte/" + this.props.codi}>
+                                <img src={"https://aguilo-botiga.limit.es/api/ecomfront/image/show/" + this.props.imatge} className="img-fluid imatgeCart" alt={this.props.desc} />
                             </a>
                         </div>
 
                         <div className="col-md-5 col-lg-7 col-xl-7">
                             <div className="card-body informacioCart">
-                                <a href={"producte/" + this.state.codi}>
+                                <a href={"producte/" + this.props.codi}>
                                     <h6 className="card-title titolCard">{this.state.titol}</h6>
                                 </a>
                                 <p className="card-text"><small className="text-muted">{this.state.desc}</small></p>
                                 <h6>{this.state.preu} €</h6>
                                 <div className="row mt-4">
                                     <label className="label col-5 col-md-6 col-lg-3"><Traduccio string="carrito.quant" /></label>
-                                    <input type="number" min="1" className="form-control number col-3 col-md-3 col-lg-2" defaultValue={this.props.quant} onChange={(e) => this.handleChange(this.state.codi, parseInt(e.target.value))} />
+                                    <input type="number" min="1" className="form-control number col-3 col-md-3 col-lg-2" defaultValue={this.props.quant} onChange={(e) => this.handleChange(this.props.codi, parseInt(e.target.value))} />
                                     <div className="col">
-                                        <button className="btn btn-outline-primary col-9 col-md-10 col-lg-7"  onClick={() => this.props.eliminar(this.state.codi)}><DeleteOutlineOutlinedIcon fontSize="small" className="mr-1 mb-1" /><Traduccio string="carrito.eliminar" /></button>
+                                        <button className="btn btn-outline-primary col-9 col-md-10 col-lg-7"  onClick={() => this.props.eliminar(this.props.codi)}><DeleteOutlineOutlinedIcon fontSize="small" className="mr-1 mb-1" /><Traduccio string="carrito.eliminar" /></button>
                                     </div>
                                 </div>
                             </div>

@@ -49,7 +49,9 @@
     -webkit-transform: scale(1.2);
     transform: scale(1.2);
   }
-  
+  .boto{
+    margin-left: -23px;
+  }
 
 .titol{
     

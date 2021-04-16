@@ -8,6 +8,8 @@ import IdiomaContext from './context/IdiomaContext';
 import { Component } from 'react';
 import Carrito from './pages/Carrito';
 import Formulari from './pages/Formulari';
+import PagamentOK from './pages/PagamentOK';
+import PagamentKO from './pages/PagamentKO';
 
 
 
@@ -82,7 +84,7 @@ class App extends Component {
   trobarArticleCart(productes, id) {
 
     for (var i = 0; i < productes.length; i++) {
-      if (productes[i][0] === id) {
+      if (productes[i]["codi"] === id) {
         return i;
       }
     }
@@ -95,7 +97,7 @@ class App extends Component {
     const productes = JSON.parse(localStorage.getItem("productesCart"));
     let count = 0;
     for (var i = 0; i < productes.length; i++) {
-      count = count + productes[i][1];
+      count = count + productes[i]["unitats"];
 
     }
 
@@ -103,11 +105,11 @@ class App extends Component {
   }
 
   // Afegir un producte dins la cistella.
-  afegirCistella(id, quant, preu) {
+  afegirCistella(id, quant, preu, decimalsPreu, decimalsPreuSenseIva, descripcio, desc, codi,imatge, ivaId, preuCataleg, preuSenseIvaCataleg, preuSenseIva ) {
 
 
     if (localStorage.getItem("productesCart") === null) {
-      const productes = [[id, quant, preu]];
+      const productes = [{"codi" : id, "unitats" : quant, "preu" : preu, "decimalsPreuCataleg" : decimalsPreu, "decimalsPreuSenseIva" : decimalsPreuSenseIva , "descripcio": descripcio,"descripcioCurta" : desc , "id" : codi , "imatge" : imatge , "ivaId" : ivaId, "preuCataleg" : preuCataleg , "preuSenseIvaCataleg" : preuSenseIvaCataleg, "preuSenseIva" : preuSenseIva}];
       localStorage.setItem("productesCart", JSON.stringify(productes));
     } else {
 
@@ -115,10 +117,10 @@ class App extends Component {
       const trobat = this.trobarArticleCart(productesCart, id);
 
       if (trobat >= 0) {
-        productesCart[trobat][1] += quant;
+        productesCart[trobat]["unitats"] += quant;
 
       } else {
-        productesCart.push([id, quant, preu]);
+        productesCart.push({"codi" : id, "unitats" : quant, "preu" : preu, "decimalsPreuCataleg" : decimalsPreu, "decimalsPreuSenseIva" : decimalsPreuSenseIva , "descripcio": descripcio,"descripcioCurta" : desc , "id" : codi , "imatge" : imatge , "ivaId" : ivaId, "preuCataleg" : preuCataleg , "preuSenseIvaCataleg" : preuSenseIvaCataleg, "preuSenseIva" : preuSenseIva});
 
       }
 
@@ -177,16 +179,18 @@ class App extends Component {
   //Funció per calcular el total
   calcularTotal(){
 
+ 
     const productes = JSON.parse(localStorage.getItem("productesCart"));
     let total = 0;
     for (var i = 0; i < productes.length; i++) {
-      total = total + (productes[i][2] * productes[i][1]);
+      total = total + (productes[i]["preu"] * productes[i]["unitats"]);
 
     }
 
     localStorage.setItem("total",total.toFixed(2));
     this.setState({total : total.toFixed(2)});
     return total;
+
 }
 
 
@@ -203,8 +207,11 @@ class App extends Component {
             <Route exact path="/familia/:codiFam" render={() => <Index key={"Index-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} count={this.state.carritoCount} />} />
             <Route path="/producte/:codi" render={() => <Fitxa key={"Fitxa-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} count={this.state.carritoCount} />} />
             <Route exact path="/carrito" render={() => <Carrito key={"Carrito-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
-            <Route exact path="/carrito/pedido" render={() => <Formulari key={"Formulari-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
-            
+            <Route exact path="/pedido" render={() => <Formulari key={"Formulari-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
+            <Route exact path="/pedido/:pagament" render={() => <Formulari key={"Formulari-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
+            <Route exact path="/urlok" render={() => <PagamentOK key={"PagamentOk-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
+            <Route exact path="/urlko" render={() => <PagamentKO key={"PagamentKo-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
+
           </div>
 
 
