@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import Traduccio from './Traduccio';
 import './css/LlistaPedido.css';
-
-import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
 import axios from 'axios';
 
 

@@ -250,79 +250,73 @@ class FormulariPedido extends Component {
       let dia = new Date();
       dia = dia.toISOString();
       let dni = this.state.numDocument.toUpperCase();
-try{
-      const pressupost = await axios({
-        method: "post",
-        url: "https://aguilo.limit.es/api/ecom/pressupostos",
-        data: {
-          codi: null,
-          versio: 0,
-          numero: null,
-          data: dia,
-          dataInici: dia,
-          estat: "PENDENT",
-          observacions: "Pago",
-          divisa: { id: divisa },
-          serieVenda: { id: venta.serie.id },
-          operari: { id: venta.operari.id },
-          magatzem: { id: venta.magatzem.id },
-          idioma: { id: idiomaId },
-          pais: { id: this.state.pais },
-          provincia: {},
-          codiPostal: {},
-          documentPagamentCobrament: { id: venta.documentPagamentCobrament.id },
-          valorDivisaEuros: divises.valorEuros,
-          nomFiscal: this.state.nomUsuari,
-          nomClient: venta.client.description,
-          nomComercial: this.state.nomUsuari,
-          classe: "0",
-          tipusNif: this.state.document,
-          nif: dni,
-          nomDomicili: this.state.domicili,
+      try {
+        const pressupost = await axios({
+          method: "post",
+          url: "https://aguilo.limit.es/api/ecom/pressupostos",
+          data: {
+            codi: null,
+            versio: 0,
+            numero: null,
+            data: dia,
+            dataInici: dia,
+            estat: "PENDENT",
+            observacions: "Pago",
+            divisa: { id: divisa },
+            serieVenda: { id: venta.serie.id },
+            operari: { id: venta.operari.id },
+            magatzem: { id: venta.magatzem.id },
+            idioma: { id: idiomaId },
+            pais: { id: this.state.pais },
+            provincia: {},
+            codiPostal: {},
+            documentPagamentCobrament: {
+              id: venta.documentPagamentCobrament.id,
+            },
+            valorDivisaEuros: divises.valorEuros,
+            nomFiscal: this.state.nomUsuari,
+            nomClient: venta.client.description,
+            nomComercial: this.state.nomUsuari,
+            classe: "0",
+            tipusNif: this.state.document,
+            nif: dni,
+            nomDomicili: this.state.domicili,
 
-          numeroDomicili: this.state.num,
-          escalaDomicili: escala,
-          pisDomicili: pis,
-          portaDomicili: porta,
-          domiciliFiscal: this.state.domicili,
-          emailFactura: this.state.emailFactura,
-          codiPostalClient: {},
-          email: this.state.email,
-          telefon: this.state.telf,
-          tipusAdresa: { id: this.state.tipoVia },
-          paisNif: { id: this.state.paisNif },
-          puntVenda: { id: venta.id },
-          client: { id: venta.client.id },
-          empresa: { id: venta.empresa.id },
-        },
-        headers: {
-          Authorization: `${localStorage.getItem(
-            "tokenType"
-          )} ${localStorage.getItem("resposta")}`,
-        },
-      });
-      const pressup = pressupost.data;
+            numeroDomicili: this.state.num,
+            escalaDomicili: escala,
+            pisDomicili: pis,
+            portaDomicili: porta,
+            domiciliFiscal: this.state.domicili,
+            emailFactura: this.state.emailFactura,
+            codiPostalClient: {},
+            email: this.state.email,
+            telefon: this.state.telf,
+            tipusAdresa: { id: this.state.tipoVia },
+            paisNif: { id: this.state.paisNif },
+            puntVenda: { id: venta.id },
+            client: { id: venta.client.id },
+            empresa: { id: venta.empresa.id },
+          },
+          headers: {
+            Authorization: `${localStorage.getItem(
+              "tokenType"
+            )} ${localStorage.getItem("resposta")}`,
+          },
+        });
+        const pressup = pressupost.data;
 
- 
-      sessionStorage.setItem("pressupost", JSON.stringify(pressup));
-      this.setState({ pressupost: pressup, pedido: pressup.codi });
-    }catch(error){
-
+        sessionStorage.setItem("pressupost", JSON.stringify(pressup));
+        this.setState({ pressupost: pressup, pedido: pressup.codi });
+      } catch (error) {
         var fallo = JSON.parse(error.request.responseText);
 
         console.log(fallo.errors);
-        if(fallo.errors[0].code === "DocumentIdentitat"){
+        if (fallo.errors[0].code === "DocumentIdentitat") {
           $("#numDocument").css("border", "1px solid red");
           $(".dni .invalid-feedback").css("display", "inherit");
-
         }
-        
       }
 
- 
-      
-
-    
       for (var i = 0; i < this.state.productes.length; i++) {
         const linia = await axios({
           method: "post",

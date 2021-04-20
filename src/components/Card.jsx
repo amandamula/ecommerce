@@ -3,7 +3,6 @@ import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
 import Traduccio from "../components/Traduccio";
 import "./css/Card.css";
 import DoneOutlineOutlinedIcon from '@material-ui/icons/DoneOutlineOutlined';
-import $ from 'jquery';
 
 class CardIndex extends Component {
   constructor(props) {
