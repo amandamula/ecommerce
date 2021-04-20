@@ -6,25 +6,45 @@ import Header from "../components/HeaderNou";
 import CardCarrito from "../components/CardCarrito";
 import "./css/Carrito.css";
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
+import Footer from "../components/Footer";
 
 class Carrito extends Component {
   constructor(props) {
     super(props);
     this.state = {
       productes: [],
-      total : 0,
+      total: 0,
+      carregant :  true
     };
   }
 
   async componentDidMount() {
     const productes = JSON.parse(localStorage.getItem("productesCart"));
- 
-    this.setState({ productes: productes });
+
+    this.setState({ productes: productes , carregant : false });
   }
 
   render() {
     const that = this;
+    if (this.state.carregant) {
+      return (
+        <div>
+          <Header
+            canviarLlenguatge={this.props.canviarLlenguatge}
+            count={this.props.count}
+          />
+      
+          <div className="container margeCarregant">
+          <div className="text-center text-primary mt-5">
+            <div className="spinner-border" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+          </div>
+        </div>
+      );
+    }
 
     if (this.state.productes !== null && localStorage.getItem("count") > 0) {
       return (
@@ -41,11 +61,10 @@ class Carrito extends Component {
                     <Traduccio string="carrito.carrito" />
                   </h4>
 
-                  {this.state.productes.map(function (articles, index) {
+                  {this.state.productes.map(function (articles) {
                     return (
-                      <div className="col-12">
+                      <div key={articles["codi"]} className="col-12">
                         <CardCarrito
-                          key={articles["codi"]}
                           codi={articles["codi"]}
                           quant={articles["unitats"]}
                           desc={articles["descripcioCurta"]}
@@ -98,10 +117,7 @@ class Carrito extends Component {
                       {this.props.total} €
                     </h2>
                     <div className="row">
-                      <a
-                        href="/pedido"
-                        className="btn btn-primary mt-3 col"
-                      >
+                      <a href="/pedido" className="btn btn-primary mt-3 col">
                         <Traduccio string="carrito.comprar" />
                       </a>
                     </div>
@@ -110,6 +126,7 @@ class Carrito extends Component {
               </div>
             </div>
           </div>
+          <Footer />
         </div>
       );
     } else {
@@ -119,17 +136,23 @@ class Carrito extends Component {
             canviarLlenguatge={this.props.canviarLlenguatge}
             count={this.props.count}
           />
-          <div className="container cardsCart">
-            <h4 className="titolCart">
-              <Traduccio string="carrito.carrito" />
-            </h4>
+          <div className="marges">
+            <div className="container cardsCart">
+              <h4 className="titolCart">
+                <Traduccio string="carrito.carrito" />
+              </h4>
 
-            <h6 className="titolCartBuid"> <Traduccio string="carrito.cistellaBuida"/></h6>
-            <a href="/" className="btn btn-primary mt-3 mb-5">
-              {" "}
-              <Traduccio string="carrito.veureArt"/>
-            </a>
+              <h6 className="titolCartBuid">
+                {" "}
+                <Traduccio string="carrito.cistellaBuida" />
+              </h6>
+              <a href="/" className="btn btn-primary mt-3 mb-5">
+                {" "}
+                <Traduccio string="carrito.veureArt" />
+              </a>
+            </div>
           </div>
+          <Footer />
         </div>
       );
     }

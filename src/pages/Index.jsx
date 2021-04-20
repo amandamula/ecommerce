@@ -8,6 +8,8 @@ import "../pages/css/Index.css";
 import axios from "axios";
 import Titol from "../components/Titol";
 import Traduccio from "../components/Traduccio";
+import Footer from "../components/Footer";
+import { Helmet } from "react-helmet";
 
 class Index extends Component {
   constructor(props) {
@@ -19,12 +21,24 @@ class Index extends Component {
       filtrat: false,
       codiFam: "",
       infoFiltrat: [],
+      famDesc: "",
+      carregant: true,
     };
     if (props != null) {
       if (props.match.params.codiFam != null) {
         this.state.codiFam = props.match.params.codiFam;
         this.state.filtrat = true;
         sessionStorage.setItem("codiFam", props.match.params.codiFam);
+      }
+    }
+  }
+
+  trobarFam() {
+    for (var x = 0; x < this.state.infoFamilies.length; x++) {
+      if (
+        this.state.infoFamilies[x]["codi"] === this.props.match.params.codiFam
+      ) {
+        return this.state.infoFamilies[x]["descripcio"];
       }
     }
   }
@@ -90,9 +104,11 @@ class Index extends Component {
     this.setState({
       infoProductes: productes._embedded.articles,
       infoFamilies: families._embedded.articleFamilias,
+      carregant: false,
     });
 
     if (this.state.filtrat) {
+      this.setState({ carregant: true });
       const respFiltrat = await axios.get(
         `https://aguilo.limit.es/api/ecomfront/articles?query=familia.codi=ic=${this.state.codiFam};bloquejat==false&page=0&size=100&lang=${lang}&sort=familia.descripcio,ASC&sort=descripcioCurta,ASC`,
         {
@@ -105,12 +121,37 @@ class Index extends Component {
       );
 
       const productesFiltrats = respFiltrat.data;
-      this.setState({ infoFiltrat: productesFiltrats._embedded.articles });
+      this.setState({
+        infoFiltrat: productesFiltrats._embedded.articles,
+        carregant: false,
+      });
     }
   }
 
   render() {
+    const familia = this.trobarFam();
+
     const that = this;
+    if (this.state.carregant) {
+      return (
+        <div>
+          <Header
+            canviarLlenguatge={this.props.canviarLlenguatge}
+            count={this.props.count}
+          />
+          <Helmet>
+            <title> Embutidos La Luna Sóller</title>
+          </Helmet>
+          <div className="container margeCarregant">
+          <div className="text-center text-primary mt-5">
+            <div className="spinner-border" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+          </div>
+        </div>
+      );
+    }
     if (!this.state.filtrat) {
       return (
         <div>
@@ -118,6 +159,9 @@ class Index extends Component {
             canviarLlenguatge={this.props.canviarLlenguatge}
             count={this.props.count}
           />
+          <Helmet>
+            <title> Embutidos La Luna Sóller</title>
+          </Helmet>
           <div className="container-fluid">
             <div className="row">
               <div className="col-md-12 col-lg-2">
@@ -139,10 +183,15 @@ class Index extends Component {
                   <div className="row d-flex">
                     {this.state.infoProductes.map(function (articles, index) {
                       return (
-                        <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                        <div
+                          key={articles.id}
+                          className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3"
+                        >
                           <Card
                             decimalsPreuCataleg={articles.decimalsPreu}
-                            decimalsPreuSenseIvaCataleg={articles.decimalsPreuIva}
+                            decimalsPreuSenseIvaCataleg={
+                              articles.decimalsPreuIva
+                            }
                             descripcio={articles.descripcio}
                             desc={articles.descripcioCurta}
                             id={articles.id}
@@ -152,9 +201,6 @@ class Index extends Component {
                             preuCataleg={articles.fixedPreuAmbIva}
                             preuSenseIvaCataleg={articles.fixedPvp}
                             preuSenseIva={articles.pvp}
-
-                            
-
                             codi={articles.codi}
                             afegirCistella={that.props.afegirCistella}
                           />
@@ -166,6 +212,7 @@ class Index extends Component {
               </div>
             </div>
           </div>
+          <Footer />
         </div>
       );
     } else {
@@ -175,6 +222,14 @@ class Index extends Component {
             canviarLlenguatge={this.props.canviarLlenguatge}
             count={this.props.count}
           />
+          <Helmet>
+            <title>
+              {" "}
+              {`${
+                familia === undefined ? "" : familia + " - "
+              } La Luna Sóller`}{" "}
+            </title>
+          </Helmet>
           <div className="container-fluid">
             <div className="row">
               <div className="col-md-12 col-lg-2">
@@ -187,25 +242,14 @@ class Index extends Component {
               <div className="col-md-12 col-lg-10">
                 <div className="row">
                   <div className="col">
-                    <Titol
-                      titol={this.state.infoFamilies.map(function (
-                        articles,
-                        index
-                      ) {
-                        if (
-                          articles.codi === sessionStorage.getItem("codiFam")
-                        ) {
-                          return articles.descripcio;
-                        }
-                      })}
-                    />
+                    <Titol titol={familia} />
                   </div>
                 </div>
                 <div className="container">
                   <div className="row d-flex">
                     {this.state.infoFiltrat.map(function (articles, index) {
                       return (
-                        <div className="col-md-6 col-lg-3">
+                        <div key={articles.codi} className="col-md-6 col-lg-3">
                           <Card
                             imatge={articles.rutaInforme}
                             desc={articles.descripcioCurta}
@@ -221,6 +265,7 @@ class Index extends Component {
               </div>
             </div>
           </div>
+          <Footer />
         </div>
       );
     }

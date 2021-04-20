@@ -54,7 +54,24 @@
     "formulari.importMin": "L'import mínim és :",
     "formulari.tancar": "Tancar",
     "formulari.modDades" : "Modificar Dades",
-    "formulari.pagament" : "Pagament"
+    "formulari.pagament" : "Pagament",
+    "email.ok" : "Comanda realitzada amb èxit",
+    "email.hola" : "Hola",
+    "email.gracias" : "Gràcies per fer la seva compra a:",
+    "email.gestionado" : "Comanda gestionada correctament amb número:",
+    "email.confianza" : "Agraïm molt la seva confiança en nosaltres",
+    "email.venedor" :  "Un client ha realitzat una nova comanda",
+    "urlok.ok" : "La compra s'ha realitzat correctament.",
+    "urlok.pedido" : " El seu num de pedido és: ",
+    "urlok.correu": "Rebrà un correu de confirmació del pagament a: " ,
+    "urlok.tornar": "Tornar",
+    "urlok.error" : "S'ha produit un error. El pagament no s'ha efectuat.",
+    "urlko.error" : "Comanda pendent de pagament",
+    "urlko.problema" : "Hi ha un problema amb la seva comanda, poseu-vos amb contacte amb el nostre servei tècnic, el nombre de la seva comanda és: ",
+    "urlko.correu": "Correu de suport tècnic:" 
+
+
+
 
 
 

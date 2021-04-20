@@ -3,15 +3,15 @@ import Traduccio from "../components/Traduccio";
 import Header from "../components/HeaderNou";
 import "./css/Carrito.css";
 import "./css/FormulariPedido.css";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import axios from "axios";
 import $ from "jquery";
-
+import Footer from "../components/Footer";
 import WarningRoundedIcon from "@material-ui/icons/WarningRounded";
 import LlistaPedido from "../components/LlistaPedido";
 import Pag from "../components/Pagament";
 import KeyboardArrowDownOutlinedIcon from "@material-ui/icons/KeyboardArrowDownOutlined";
-import {  Modal } from 'react-bootstrap';
+import { Modal } from "react-bootstrap";
 
 class FormulariPedido extends Component {
   constructor(props) {
@@ -27,21 +27,21 @@ class FormulariPedido extends Component {
       poblacions: [],
       altresPob: false,
       pagament: false,
-      pedido: "2564",
+      pedido: "",
       mostrar1: false,
       mostrar2: false,
       mostrar3: true,
       pressupost: [],
       importEnvio: "",
-      show : false,
+      show: false,
       altres: "Altres",
-      otros : "Otros",
-      other : "Other",
-      lang : "",
-      opcion : "Elige una opción",
-      opcio : "Tria una opció",
-      option : "Choose an option",
-      descripcioGastos : "",
+      otros: "Otros",
+      other: "Other",
+      lang: "",
+      opcion: "Elige una opción",
+      opcio: "Tria una opció",
+      option: "Choose an option",
+      descripcioGastos: "",
     };
 
     this.form = createRef();
@@ -52,7 +52,7 @@ class FormulariPedido extends Component {
     this.submit = this.submit.bind(this);
     this.canviarPattern = this.canviarPattern.bind(this);
     this.agafarValorsForm = this.agafarValorsForm.bind(this);
-    this.agafarValorResum= this.agafarValorResum.bind(this);
+    this.agafarValorResum = this.agafarValorResum.bind(this);
     this.canviarIcon = this.canviarIcon.bind(this);
     this.canviarIcon2 = this.canviarIcon2.bind(this);
     this.canviarIcon3 = this.canviarIcon3.bind(this);
@@ -154,7 +154,7 @@ class FormulariPedido extends Component {
 
   agafarValorResum(id, valor) {
     this.setState({
-      [id+"2"]: valor,
+      [id + "2"]: valor,
     });
     console.log(valor.target);
   }
@@ -184,7 +184,7 @@ class FormulariPedido extends Component {
     let afegirImportEnvio = false;
 
     if (this.props.total < importMinim) {
-      this.setState({show : true});
+      this.setState({ show: true });
     } else {
       if (this.props.total >= importEnvioGratis) {
         afegirImportEnvio = false;
@@ -249,7 +249,8 @@ class FormulariPedido extends Component {
 
       let dia = new Date();
       dia = dia.toISOString();
-
+      let dni = this.state.numDocument.toUpperCase();
+try{
       const pressupost = await axios({
         method: "post",
         url: "https://aguilo.limit.es/api/ecom/pressupostos",
@@ -276,7 +277,7 @@ class FormulariPedido extends Component {
           nomComercial: this.state.nomUsuari,
           classe: "0",
           tipusNif: this.state.document,
-          nif: this.state.numdocument,
+          nif: dni,
           nomDomicili: this.state.domicili,
 
           numeroDomicili: this.state.num,
@@ -300,11 +301,28 @@ class FormulariPedido extends Component {
           )} ${localStorage.getItem("resposta")}`,
         },
       });
-
       const pressup = pressupost.data;
+
+ 
       sessionStorage.setItem("pressupost", JSON.stringify(pressup));
       this.setState({ pressupost: pressup, pedido: pressup.codi });
+    }catch(error){
 
+        var fallo = JSON.parse(error.request.responseText);
+
+        console.log(fallo.errors);
+        if(fallo.errors[0].code === "DocumentIdentitat"){
+          $("#numDocument").css("border", "1px solid red");
+          $(".dni .invalid-feedback").css("display", "inherit");
+
+        }
+        
+      }
+
+ 
+      
+
+    
       for (var i = 0; i < this.state.productes.length; i++) {
         const linia = await axios({
           method: "post",
@@ -345,7 +363,6 @@ class FormulariPedido extends Component {
 
       if (afegirImportEnvio) {
         const costRepartiment = this.importRepartiment();
-        
 
         const gastosEnvio = await axios.get(
           `https://aguilo.limit.es/api/ecomfront/articles?query=codi=='GASTOS_ENVIO'`,
@@ -357,7 +374,7 @@ class FormulariPedido extends Component {
             },
           }
         );
-  
+
         const gastos = gastosEnvio.data._embedded.articles[0];
 
         const gastosEnvioLinea = await axios({
@@ -366,12 +383,12 @@ class FormulariPedido extends Component {
           data: {
             article: { id: gastos.id },
             decimalsPreuCataleg: gastos.decimalsPreuIva,
-            decimalsPreuSenseIvaCataleg:  gastos.decimalsPreu,
+            decimalsPreuSenseIvaCataleg: gastos.decimalsPreu,
             descripcio: gastos.descripcio,
             factorConversioSortides: 0,
             iva: { id: gastos.iva.id },
             pressupost: { id: this.state.pressupost.id },
-            preu:  gastos.pvp,
+            preu: gastos.pvp,
             preuAmbIva: costRepartiment,
             preuCataleg: costRepartiment,
             preuSenseIVaCataleg: gastos.pvp,
@@ -385,8 +402,11 @@ class FormulariPedido extends Component {
             )} ${localStorage.getItem("resposta")}`,
           },
         });
-     
-        this.setState({ importEnvio: costRepartiment.toFixed(2) , descripcioGastos : gastos.descripcio });
+
+        this.setState({
+          importEnvio: costRepartiment.toFixed(2),
+          descripcioGastos: gastos.descripcio,
+        });
       }
 
       this.setState({ pagament: true });
@@ -507,8 +527,7 @@ class FormulariPedido extends Component {
     const total = this.props.calcularTotal();
     const lang = localStorage.getItem("idioma");
 
-
-    this.setState({ productes: productes, total: total , lang : lang});
+    this.setState({ productes: productes, total: total, lang: lang });
 
     if (productes != null) {
       const resposta = await axios({
@@ -634,10 +653,13 @@ class FormulariPedido extends Component {
             count={this.props.count}
           />
           <div className="container cardsCart">
-            <h6 className="titolCartBuid"> <Traduccio string="carrito.cistellaBuida"/>.</h6>
+            <h6 className="titolCartBuid">
+              {" "}
+              <Traduccio string="carrito.cistellaBuida" />.
+            </h6>
             <a href="/" className="btn btn-primary mt-3 mb-5">
               {" "}
-              <Traduccio string="carrito.veureArt"/>
+              <Traduccio string="carrito.veureArt" />
             </a>
           </div>
         </div>
@@ -663,7 +685,9 @@ class FormulariPedido extends Component {
                             className="needs-validation"
                             noValidate
                           >
-                            <h4 className="titolCart2"><Traduccio string="formulari.usuari"/></h4>
+                            <h4 className="titolCart2">
+                              <Traduccio string="formulari.usuari" />
+                            </h4>
 
                             <div className="row mt-4">
                               <div className="col-md-8">
@@ -672,7 +696,7 @@ class FormulariPedido extends Component {
                                     htmlFor="nomUsuari"
                                     className="labelForm"
                                   >
-                                    <Traduccio string="formulari.nom"/> *
+                                    <Traduccio string="formulari.nom" /> *
                                   </label>
                                   <input
                                     type="text"
@@ -692,14 +716,14 @@ class FormulariPedido extends Component {
                                       fontSize="small"
                                       className="mb-1"
                                     />{" "}
-                                    <Traduccio string="formulari.campObl"/>
+                                    <Traduccio string="formulari.campObl" />
                                   </div>
                                 </div>
                               </div>
                               <div className="col-md-4">
                                 <div className="form-group labelForm">
                                   <label htmlFor="telf" className="labelForm">
-                                  <Traduccio string="formulari.telefono"/> *
+                                    <Traduccio string="formulari.telefono" /> *
                                   </label>
                                   <input
                                     type="tel"
@@ -721,7 +745,7 @@ class FormulariPedido extends Component {
                                       fontSize="small"
                                       className="mb-1"
                                     />{" "}
-                                    <Traduccio string="formulari.minCaract"/>
+                                    <Traduccio string="formulari.minCaract" />
                                   </div>
                                 </div>
                               </div>
@@ -733,7 +757,7 @@ class FormulariPedido extends Component {
                                     htmlFor="paisNif"
                                     className="labelForm"
                                   >
-                                    <Traduccio string="formulari.paisNif"/> *
+                                    <Traduccio string="formulari.paisNif" /> *
                                   </label>
                                   <select
                                     id="paisNif"
@@ -748,7 +772,12 @@ class FormulariPedido extends Component {
                                     }
                                   >
                                     <option selected disabled value="">
-                                    {this.state.lang === "es" && this.state.opcion || this.state.lang === "ca" && this.state.opcio|| this.state.lang === "en" && this.state.option}
+                                      {(this.state.lang === "es" &&
+                                        this.state.opcion) ||
+                                        (this.state.lang === "ca" &&
+                                          this.state.opcio) ||
+                                        (this.state.lang === "en" &&
+                                          this.state.option)}
                                     </option>
                                     {this.state.paisosNif.map(function (
                                       pais,
@@ -769,7 +798,7 @@ class FormulariPedido extends Component {
                                       fontSize="small"
                                       className="mb-1"
                                     />{" "}
-                                    <Traduccio string="formulari.campObl"/>
+                                    <Traduccio string="formulari.campObl" />
                                   </div>
                                 </div>
                               </div>
@@ -779,7 +808,7 @@ class FormulariPedido extends Component {
                                     htmlFor="document"
                                     className="labelForm"
                                   >
-                                    <Traduccio string="formulari.tipusDoc"/> *
+                                    <Traduccio string="formulari.tipusDoc" /> *
                                   </label>
                                   <select
                                     id="document"
@@ -795,7 +824,12 @@ class FormulariPedido extends Component {
                                     }
                                   >
                                     <option selected disabled value="">
-                                    {this.state.lang === "es" && this.state.opcion || this.state.lang === "ca" && this.state.opcio|| this.state.lang === "en" && this.state.option}
+                                      {(this.state.lang === "es" &&
+                                        this.state.opcion) ||
+                                        (this.state.lang === "ca" &&
+                                          this.state.opcio) ||
+                                        (this.state.lang === "en" &&
+                                          this.state.option)}
                                     </option>
                                     <option value="NIF">NIF</option>
                                     <option value="NIF_operador">
@@ -809,7 +843,12 @@ class FormulariPedido extends Component {
                                       CERTIFICAT RESIDENCIA FISCAL
                                     </option>
                                     <option value="altres">
-                                    {this.state.lang === "es" && this.state.otros || this.state.lang === "ca" && this.state.altres|| this.state.lang === "en" && this.state.other}
+                                      {(this.state.lang === "es" &&
+                                        this.state.otros) ||
+                                        (this.state.lang === "ca" &&
+                                          this.state.altres) ||
+                                        (this.state.lang === "en" &&
+                                          this.state.other)}
                                     </option>
                                   </select>
                                   <div className="invalid-feedback">
@@ -817,18 +856,18 @@ class FormulariPedido extends Component {
                                       fontSize="small"
                                       className="mb-1"
                                     />{" "}
-                                    <Traduccio string="formulari.campObl"/>
+                                    <Traduccio string="formulari.campObl" />
                                   </div>
                                 </div>
                               </div>
                               <div className="col-md-4">
-                                <div className="form-group labelForm">
+                                <div className="form-group labelForm dni">
                                   <label
                                     htmlFor="numDocument"
                                     className="labelForm"
                                     required
                                   >
-                                    <Traduccio string="formulari.numDoc"/> *
+                                    <Traduccio string="formulari.numDoc" /> *
                                   </label>
                                   <input
                                     type="text"
@@ -850,7 +889,7 @@ class FormulariPedido extends Component {
                                       fontSize="small"
                                       className="mb-1"
                                     />{" "}
-                                    <Traduccio string="formulari.numInvalid"/>
+                                    <Traduccio string="formulari.numInvalid" />
                                   </div>
                                 </div>
                               </div>
@@ -859,7 +898,7 @@ class FormulariPedido extends Component {
                               <div className="col-md-6">
                                 <div className="form-group labelForm">
                                   <label htmlFor="email" className="labelForm">
-                                  <Traduccio string="formulari.email"/> *
+                                    <Traduccio string="formulari.email" /> *
                                   </label>
                                   <input
                                     type="email"
@@ -879,7 +918,7 @@ class FormulariPedido extends Component {
                                       fontSize="small"
                                       className="mb-1"
                                     />{" "}
-                                   <Traduccio string="formulari.campObl"/>
+                                    <Traduccio string="formulari.campObl" />
                                   </div>
                                 </div>
                               </div>
@@ -889,7 +928,8 @@ class FormulariPedido extends Component {
                                     htmlFor="emailFactura"
                                     className="labelForm"
                                   >
-                                    <Traduccio string="formulari.emailFactura"/> *
+                                    <Traduccio string="formulari.emailFactura" />{" "}
+                                    *
                                   </label>
                                   <input
                                     type="email"
@@ -909,21 +949,21 @@ class FormulariPedido extends Component {
                                       fontSize="small"
                                       className="mb-1"
                                     />{" "}
-                                    <Traduccio string="formulari.campObl"/>
+                                    <Traduccio string="formulari.campObl" />
                                   </div>
                                 </div>
                               </div>
                             </div>
 
                             <h4 className="titolCart2 mt-5">
-                            <Traduccio string="formulari.envio"/>
+                              <Traduccio string="formulari.envio" />
                             </h4>
 
                             <div className="row mt-4">
                               <div className="col-md-4">
                                 <div className="form-group labelForm">
                                   <label htmlFor="pais" className="labelForm">
-                                  <Traduccio string="formulari.pais"/> *
+                                    <Traduccio string="formulari.pais" /> *
                                   </label>
                                   <select
                                     id="pais"
@@ -936,8 +976,7 @@ class FormulariPedido extends Component {
                                       ) +
                                       this.handleChange(
                                         e.target.value.split("&")[1]
-                                      )
-                                      +
+                                      ) +
                                       this.agafarValorResum(
                                         e.target.id,
                                         e.target.value.split("&")[2]
@@ -946,7 +985,12 @@ class FormulariPedido extends Component {
                                     required
                                   >
                                     <option selected disabled value="">
-                                    {this.state.lang === "es" && this.state.opcion || this.state.lang === "ca" && this.state.opcio|| this.state.lang === "en" && this.state.option}
+                                      {(this.state.lang === "es" &&
+                                        this.state.opcion) ||
+                                        (this.state.lang === "ca" &&
+                                          this.state.opcio) ||
+                                        (this.state.lang === "en" &&
+                                          this.state.option)}
                                     </option>
                                     {this.state.paisos.map(function (
                                       paisos,
@@ -955,7 +999,13 @@ class FormulariPedido extends Component {
                                       return (
                                         <option
                                           key={paisos.codi}
-                                          value={paisos.id + "&" + paisos.codi + "&" + paisos.nom}
+                                          value={
+                                            paisos.id +
+                                            "&" +
+                                            paisos.codi +
+                                            "&" +
+                                            paisos.nom
+                                          }
                                         >
                                           {paisos.nom}
                                         </option>
@@ -967,14 +1017,14 @@ class FormulariPedido extends Component {
                                       fontSize="small"
                                       className="mb-1"
                                     />{" "}
-                                    <Traduccio string="formulari.campObl"/>
+                                    <Traduccio string="formulari.campObl" />
                                   </div>
                                 </div>
                               </div>
                               <div className="col-md-4">
                                 <div className="form-group labelForm">
                                   <label htmlFor="prov" className="labelForm">
-                                  <Traduccio string="formulari.provincia"/> *
+                                    <Traduccio string="formulari.provincia" /> *
                                   </label>
                                   <select
                                     id="prov"
@@ -987,16 +1037,21 @@ class FormulariPedido extends Component {
                                       this.agafarValorsForm(
                                         e.target.id,
                                         e.target.value.split("&")[0]
-                                        ) + this.agafarValorResum(
-                                          e.target.id,
-                                          e.target.value.split("&")[2]
-                                        )
-                                      
+                                      ) +
+                                      this.agafarValorResum(
+                                        e.target.id,
+                                        e.target.value.split("&")[2]
+                                      )
                                     }
                                     required
                                   >
                                     <option selected disabled value="">
-                                    {this.state.lang === "es" && this.state.opcion || this.state.lang === "ca" && this.state.opcio|| this.state.lang === "en" && this.state.option}
+                                      {(this.state.lang === "es" &&
+                                        this.state.opcion) ||
+                                        (this.state.lang === "ca" &&
+                                          this.state.opcio) ||
+                                        (this.state.lang === "en" &&
+                                          this.state.option)}
                                     </option>
 
                                     {this.state.provincies.length > 0 &&
@@ -1007,7 +1062,13 @@ class FormulariPedido extends Component {
                                         return (
                                           <option
                                             key={prov.codi}
-                                            value={prov.id + "&" + prov.codi + "&" + prov.nom}
+                                            value={
+                                              prov.id +
+                                              "&" +
+                                              prov.codi +
+                                              "&" +
+                                              prov.nom
+                                            }
                                           >
                                             {prov.nom}
                                           </option>
@@ -1015,7 +1076,12 @@ class FormulariPedido extends Component {
                                       })}
 
                                     <option value={"altres&altres&altres"}>
-                                    {this.state.lang === "es" && this.state.otros || this.state.lang === "ca" && this.state.altres || this.state.lang === "en" && this.state.other}
+                                      {(this.state.lang === "es" &&
+                                        this.state.otros) ||
+                                        (this.state.lang === "ca" &&
+                                          this.state.altres) ||
+                                        (this.state.lang === "en" &&
+                                          this.state.other)}
                                     </option>
                                   </select>
                                   <div className="invalid-feedback">
@@ -1034,7 +1100,8 @@ class FormulariPedido extends Component {
                                       htmlFor="poblacio"
                                       className="labelForm"
                                     >
-                                      <Traduccio string="formulari.poblacio"/> *
+                                      <Traduccio string="formulari.poblacio" />{" "}
+                                      *
                                     </label>
 
                                     <select
@@ -1042,7 +1109,9 @@ class FormulariPedido extends Component {
                                       className="custom-select  input"
                                       defaultValue=""
                                       onChange={(e) =>
-                                        this.canviarPoblacio(e.target.value.split("&")[0]) +
+                                        this.canviarPoblacio(
+                                          e.target.value.split("&")[0]
+                                        ) +
                                         this.agafarValorsForm(
                                           e.target.id,
                                           e.target.value.split("&")[0]
@@ -1055,7 +1124,12 @@ class FormulariPedido extends Component {
                                       required
                                     >
                                       <option selected disabled value="">
-                                      {this.state.lang === "es" && this.state.opcion || this.state.lang === "ca" && this.state.opcio|| this.state.lang === "en" && this.state.option}
+                                        {(this.state.lang === "es" &&
+                                          this.state.opcion) ||
+                                          (this.state.lang === "ca" &&
+                                            this.state.opcio) ||
+                                          (this.state.lang === "en" &&
+                                            this.state.option)}
                                       </option>
 
                                       {this.state.poblacions.length > 0 &&
@@ -1066,21 +1140,32 @@ class FormulariPedido extends Component {
                                           return (
                                             <option
                                               key={pob.codi}
-                                              value={pob.id + "&" + pob.poblacioCodiTxt}
+                                              value={
+                                                pob.id +
+                                                "&" +
+                                                pob.poblacioCodiTxt
+                                              }
                                             >
                                               {pob.poblacioCodiTxt}
                                             </option>
                                           );
                                         })}
 
-                                      <option value={"altres&altres"}>{this.state.lang === "es" && this.state.otros || this.state.lang === "ca" && this.state.altres || this.state.lang === "en" && this.state.other}</option>
+                                      <option value={"altres&altres"}>
+                                        {(this.state.lang === "es" &&
+                                          this.state.otros) ||
+                                          (this.state.lang === "ca" &&
+                                            this.state.altres) ||
+                                          (this.state.lang === "en" &&
+                                            this.state.other)}
+                                      </option>
                                     </select>
                                     <div className="invalid-feedback">
                                       <WarningRoundedIcon
                                         fontSize="small"
                                         className="mb-1"
                                       />{" "}
-                                      <Traduccio string="formulari.campObl"/>
+                                      <Traduccio string="formulari.campObl" />
                                     </div>
                                   </div>
                                 </div>
@@ -1092,7 +1177,8 @@ class FormulariPedido extends Component {
                                         htmlFor="nomProvincia"
                                         className="labelForm"
                                       >
-                                        <Traduccio string="formulari.nomProv"/> *
+                                        <Traduccio string="formulari.nomProv" />{" "}
+                                        *
                                       </label>
                                       <input
                                         type="text"
@@ -1104,7 +1190,7 @@ class FormulariPedido extends Component {
                                           this.agafarValorsForm(
                                             e.target.id,
                                             e.target.value
-                                          )+
+                                          ) +
                                           this.agafarValorResum(
                                             e.target.id,
                                             e.target.value
@@ -1116,7 +1202,7 @@ class FormulariPedido extends Component {
                                           fontSize="small"
                                           className="mb-1"
                                         />{" "}
-                                        <Traduccio string="formulari.campObl"/>
+                                        <Traduccio string="formulari.campObl" />
                                       </div>
                                     </div>
                                   </div>
@@ -1126,7 +1212,8 @@ class FormulariPedido extends Component {
                                         htmlFor="nomPoblacio"
                                         className="labelForm"
                                       >
-                                        <Traduccio string="formulari.nomPob"/> *
+                                        <Traduccio string="formulari.nomPob" />{" "}
+                                        *
                                       </label>
                                       <input
                                         type="text"
@@ -1150,14 +1237,14 @@ class FormulariPedido extends Component {
                                           fontSize="small"
                                           className="mb-1"
                                         />{" "}
-                                        <Traduccio string="formulari.campObl"/>
+                                        <Traduccio string="formulari.campObl" />
                                       </div>
                                     </div>
                                   </div>
                                   <div className="col-md-4">
                                     <div className="form-group labelForm">
                                       <label htmlFor="cp" className="labelForm">
-                                      <Traduccio string="formulari.cp"/>
+                                        <Traduccio string="formulari.cp" />
                                       </label>
                                       <input
                                         type="text"
@@ -1176,7 +1263,7 @@ class FormulariPedido extends Component {
                                           fontSize="small"
                                           className="mb-1"
                                         />{" "}
-                                       <Traduccio string="formulari.campObl"/>
+                                        <Traduccio string="formulari.campObl" />
                                       </div>
                                     </div>
                                   </div>
@@ -1191,7 +1278,7 @@ class FormulariPedido extends Component {
                                       htmlFor="poblacio"
                                       className="labelForm"
                                     >
-                                      <Traduccio string="formulari.nomPob"/> *
+                                      <Traduccio string="formulari.nomPob" /> *
                                     </label>
                                     <input
                                       type="text"
@@ -1215,14 +1302,14 @@ class FormulariPedido extends Component {
                                         fontSize="small"
                                         className="mb-1"
                                       />{" "}
-                                      <Traduccio string="formulari.campObl"/>
+                                      <Traduccio string="formulari.campObl" />
                                     </div>
                                   </div>
                                 </div>
                                 <div className="col-md-4">
                                   <div className="form-group labelForm">
                                     <label htmlFor="cp" className="labelForm">
-                                    <Traduccio string="formulari.cp"/> *
+                                      <Traduccio string="formulari.cp" /> *
                                     </label>
                                     <input
                                       type="text"
@@ -1241,7 +1328,7 @@ class FormulariPedido extends Component {
                                         fontSize="small"
                                         className="mb-1"
                                       />{" "}
-                                      <Traduccio string="formulari.campObl"/>
+                                      <Traduccio string="formulari.campObl" />
                                     </div>
                                   </div>
                                 </div>
@@ -1255,7 +1342,7 @@ class FormulariPedido extends Component {
                                     htmlFor="tipoVia"
                                     className="labelForm"
                                   >
-                                    <Traduccio string="formulari.via"/> *
+                                    <Traduccio string="formulari.via" /> *
                                   </label>
                                   <select
                                     id="tipoVia"
@@ -1270,7 +1357,12 @@ class FormulariPedido extends Component {
                                     }
                                   >
                                     <option selected disabled value="">
-                                    {this.state.lang === "es" && this.state.opcion || this.state.lang === "ca" && this.state.opcio|| this.state.lang === "en" && this.state.option}
+                                      {(this.state.lang === "es" &&
+                                        this.state.opcion) ||
+                                        (this.state.lang === "ca" &&
+                                          this.state.opcio) ||
+                                        (this.state.lang === "en" &&
+                                          this.state.option)}
                                     </option>
                                     {this.state.adreces.map(function (
                                       tipus,
@@ -1291,7 +1383,7 @@ class FormulariPedido extends Component {
                                       fontSize="small"
                                       className="mb-1"
                                     />{" "}
-                                    <Traduccio string="formulari.campObl"/>
+                                    <Traduccio string="formulari.campObl" />
                                   </div>
                                 </div>
                               </div>
@@ -1301,7 +1393,7 @@ class FormulariPedido extends Component {
                                     htmlFor="domicili"
                                     className="labelForm"
                                   >
-                                    <Traduccio string="formulari.domicili"/> *
+                                    <Traduccio string="formulari.domicili" /> *
                                   </label>
                                   <input
                                     type="text"
@@ -1321,14 +1413,14 @@ class FormulariPedido extends Component {
                                       fontSize="small"
                                       className="mb-1"
                                     />{" "}
-                                    <Traduccio string="formulari.campObl"/>
+                                    <Traduccio string="formulari.campObl" />
                                   </div>
                                 </div>
                               </div>
                               <div className="col-6 col-md-2">
                                 <div className="form-group labelForm">
                                   <label htmlFor="num" className="labelForm">
-                                  <Traduccio string="formulari.numDom"/> *
+                                    <Traduccio string="formulari.numDom" /> *
                                   </label>
                                   <input
                                     type="text"
@@ -1349,14 +1441,14 @@ class FormulariPedido extends Component {
                                       fontSize="small"
                                       className="mb-1"
                                     />{" "}
-                                   <Traduccio string="formulari.campObl"/>
+                                    <Traduccio string="formulari.campObl" />
                                   </div>
                                 </div>
                               </div>
                               <div className="col-6 col-md-2">
                                 <div className="form-group labelForm">
                                   <label htmlFor="escala" className="labelForm">
-                                  <Traduccio string="formulari.escala"/>
+                                    <Traduccio string="formulari.escala" />
                                   </label>
                                   <input
                                     type="text"
@@ -1375,7 +1467,7 @@ class FormulariPedido extends Component {
                               <div className="col-6 col-md-2">
                                 <div className="form-group labelForm">
                                   <label htmlFor="porta" className="labelForm">
-                                  <Traduccio string="formulari.porta"/>
+                                    <Traduccio string="formulari.porta" />
                                   </label>
                                   <input
                                     type="text"
@@ -1394,7 +1486,7 @@ class FormulariPedido extends Component {
                               <div className="col-6 col-md-2">
                                 <div className="form-group labelForm">
                                   <label htmlFor="pis" className="labelForm">
-                                  <Traduccio string="formulari.pis"/>
+                                    <Traduccio string="formulari.pis" />
                                   </label>
                                   <input
                                     type="text"
@@ -1417,21 +1509,31 @@ class FormulariPedido extends Component {
                                   type="submit"
                                   className="btn btn-primary mt-2 col"
                                 >
-                                  <Traduccio string="formulari.següent"/>
+                                  <Traduccio string="formulari.següent" />
                                 </button>
                               </div>
                             </div>
                           </form>
-                          <Modal show={this.state.show} onHide={() => this.setState({show : false})}>
-                          
+                          <Modal
+                            show={this.state.show}
+                            onHide={() => this.setState({ show: false })}
+                          >
                             <Modal.Body>
-                           <p className="mt-4 titolCart2"><Traduccio string="formulari.modal"/></p> 
-                           <p className="titolCart2"> <Traduccio string="formulari.importMin"/>{this.state.importRepartiment}</p> 
+                              <p className="mt-4 titolCart2">
+                                <Traduccio string="formulari.modal" />
+                              </p>
+                              <p className="titolCart2">
+                                {" "}
+                                <Traduccio string="formulari.importMin" />
+                                {this.state.importRepartiment}
+                              </p>
                             </Modal.Body>
                             <Modal.Footer>
-                              <button className="btn btn-outline-primary" onClick={() => this.setState({show : false})}>
-                                
-                              <Traduccio string="formulari.tancar"/>
+                              <button
+                                className="btn btn-outline-primary"
+                                onClick={() => this.setState({ show: false })}
+                              >
+                                <Traduccio string="formulari.tancar" />
                               </button>
                             </Modal.Footer>
                           </Modal>
@@ -1443,15 +1545,23 @@ class FormulariPedido extends Component {
                 <div className="col-sm-12 col-md-12 col-lg-4">
                   <div className="container resum">
                     <div className="container">
-                      <h5 className="titolCart2"><Traduccio string="formulari.pedido"/></h5>
+                      <h5 className="titolCart2">
+                        <Traduccio string="formulari.pedido" />
+                      </h5>
 
                       <div className="row mt-4">
                         <table className="table">
                           <thead>
                             <tr>
-                              <th className="th"><Traduccio string="formulari.articles"/></th>
-                              <th className="th"><Traduccio string="formulari.unitats"/></th>
-                              <th className="th"><Traduccio string="formulari.preu"/></th>
+                              <th className="th">
+                                <Traduccio string="formulari.articles" />
+                              </th>
+                              <th className="th">
+                                <Traduccio string="formulari.unitats" />
+                              </th>
+                              <th className="th">
+                                <Traduccio string="formulari.preu" />
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1470,7 +1580,9 @@ class FormulariPedido extends Component {
                             })}
 
                             <tr>
-                              <th className="titolTotal"><Traduccio string="carrito.total"/></th>
+                              <th className="titolTotal">
+                                <Traduccio string="carrito.total" />
+                              </th>
 
                               <th colSpan="2" className="preuTotal">
                                 {this.props.total} €
@@ -1483,7 +1595,7 @@ class FormulariPedido extends Component {
                           className="btn btn-outline-primary ml-auto"
                         >
                           {" "}
-                          <Traduccio string="formulari.modPedido"/>
+                          <Traduccio string="formulari.modPedido" />
                         </a>
                       </div>
                     </div>
@@ -1491,6 +1603,7 @@ class FormulariPedido extends Component {
                 </div>
               </div>
             </div>
+            <Footer />
           </div>
         );
       } else {
@@ -1519,7 +1632,7 @@ class FormulariPedido extends Component {
                                     aria-controls="collapseOne"
                                     onClick={this.canviarIcon}
                                   >
-                                    <Traduccio string="formulari.usuari"/>{" "}
+                                    <Traduccio string="formulari.usuari" />{" "}
                                     <span style={d}>
                                       {" "}
                                       <KeyboardArrowDownOutlinedIcon
@@ -1540,34 +1653,54 @@ class FormulariPedido extends Component {
                                   <div className="row">
                                     <div className="col-md-6">
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.nom"/>: </strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.nom" />:{" "}
+                                        </strong>{" "}
                                         {this.state.nomUsuari}
                                       </p>
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.tipusDoc"/>:</strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.tipusDoc" />
+                                          :
+                                        </strong>{" "}
                                         {this.state.document}
                                       </p>
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.email"/>:</strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.email" />
+                                          :
+                                        </strong>{" "}
                                         {this.state.email}
                                       </p>
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.telefono"/>:</strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.telefono" />
+                                          :
+                                        </strong>{" "}
                                         {this.state.telf}
                                       </p>
                                     </div>
                                     <div className="col-md-6">
                                       {" "}
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.paisNif"/>:</strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.paisNif" />
+                                          :
+                                        </strong>{" "}
                                         {this.state.paisNif}
                                       </p>
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.numDoc"/>:</strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.numDoc" />
+                                          :
+                                        </strong>{" "}
                                         {this.state.numDocument}
                                       </p>
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.emailFactura"/>:</strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.emailFactura" />
+                                          :
+                                        </strong>{" "}
                                         {this.state.emailFactura}
                                       </p>
                                     </div>
@@ -1579,7 +1712,7 @@ class FormulariPedido extends Component {
                                       onClick={this.tornarDades}
                                     >
                                       {" "}
-                                      <Traduccio string="formulari.modDades"/>
+                                      <Traduccio string="formulari.modDades" />
                                     </button>
                                   </div>
                                 </div>
@@ -1597,7 +1730,7 @@ class FormulariPedido extends Component {
                                     aria-controls="collapseTwo"
                                     onClick={this.canviarIcon2}
                                   >
-                                    <Traduccio string="formulari.envio"/>{" "}
+                                    <Traduccio string="formulari.envio" />{" "}
                                     <span style={d}>
                                       {" "}
                                       <KeyboardArrowDownOutlinedIcon
@@ -1617,57 +1750,80 @@ class FormulariPedido extends Component {
                                   <div className="row">
                                     <div className="col-md-6">
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.pais"/>: </strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.pais" />:{" "}
+                                        </strong>{" "}
                                         {this.state.pais2}
                                       </p>
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.poblacio"/>:</strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.poblacio" />
+                                          :
+                                        </strong>{" "}
                                         {this.state.poblacio2}
                                       </p>
-                                     
+
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.domicili"/>:</strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.domicili" />
+                                          :
+                                        </strong>{" "}
                                         {this.state.domicili}
                                       </p>
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.pis"/>:</strong> {this.state.pis}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.pis" />:
+                                        </strong>{" "}
+                                        {this.state.pis}
                                       </p>
-                                     
+
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.porta"/>:</strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.porta" />
+                                          :
+                                        </strong>{" "}
                                         {this.state.porta}
                                       </p>
                                     </div>
                                     <div className="col-md-6">
                                       {" "}
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.provincia"/>:</strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.provincia" />
+                                          :
+                                        </strong>{" "}
                                         {this.state.prov2}
                                       </p>
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.via"/>:</strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.via" />:
+                                        </strong>{" "}
                                         {this.state.tipoVia}
                                       </p>
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.numDom"/>:</strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.numDom" />
+                                          :
+                                        </strong>{" "}
                                         {this.state.num}
                                       </p>
-                                      
                                       <p className="info">
-                                        <strong className="upper"><Traduccio string="formulari.escala"/>:</strong>{" "}
+                                        <strong className="upper">
+                                          <Traduccio string="formulari.escala" />
+                                          :
+                                        </strong>{" "}
                                         {this.state.escala}
                                       </p>
-                                      
                                     </div>
                                   </div>
                                   <div>
-                                  <button
+                                    <button
                                       className="btn btn-outline-primary mb-4"
                                       style={d}
                                       onClick={this.tornarDades}
                                     >
                                       {" "}
-                                      <Traduccio string="formulari.modDades"/>
+                                      <Traduccio string="formulari.modDades" />
                                     </button>
                                   </div>
                                 </div>
@@ -1684,7 +1840,7 @@ class FormulariPedido extends Component {
                                     aria-controls="collapseThree"
                                     onClick={this.canviarIcon3}
                                   >
-                                    <Traduccio string="formulari.pagament"/>{" "}
+                                    <Traduccio string="formulari.pagament" />{" "}
                                     <span style={d}>
                                       {" "}
                                       <KeyboardArrowDownOutlinedIcon
@@ -1719,15 +1875,23 @@ class FormulariPedido extends Component {
                 <div className="col-sm-12 col-md-12 col-lg-4">
                   <div className="container resum">
                     <div className="container">
-                      <h5 className="titolCart2"><Traduccio string="formulari.pedido"/></h5>
+                      <h5 className="titolCart2">
+                        <Traduccio string="formulari.pedido" />
+                      </h5>
 
                       <div className="row mt-4">
                         <table className="table">
                           <thead>
                             <tr>
-                              <th className="th"><Traduccio string="formulari.articles"/></th>
-                              <th className="th"><Traduccio string="formulari.unitats"/></th>
-                              <th className="th"><Traduccio string="formulari.preu"/></th>
+                              <th className="th">
+                                <Traduccio string="formulari.articles" />
+                              </th>
+                              <th className="th">
+                                <Traduccio string="formulari.unitats" />
+                              </th>
+                              <th className="th">
+                                <Traduccio string="formulari.preu" />
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1745,12 +1909,16 @@ class FormulariPedido extends Component {
                               );
                             })}
                             <tr>
-                              <td className="titolsLlista">{this.state.descripcioGastos}</td>
+                              <td className="titolsLlista">
+                                {this.state.descripcioGastos}
+                              </td>
                               <td>1</td>
                               <td>{this.state.importEnvio} €</td>
                             </tr>
                             <tr>
-                              <th className="titolTotal"><Traduccio string="formulari.total"/> </th>
+                              <th className="titolTotal">
+                                <Traduccio string="carrito.total" />{" "}
+                              </th>
 
                               <th colSpan="2" className="preuTotal">
                                 {this.props.total} €
@@ -1763,7 +1931,7 @@ class FormulariPedido extends Component {
                           className="btn btn-outline-primary ml-auto"
                         >
                           {" "}
-                          <Traduccio string="formulari.modPedido"/>
+                          <Traduccio string="formulari.modPedido" />
                         </a>
                       </div>
                     </div>
@@ -1771,6 +1939,7 @@ class FormulariPedido extends Component {
                 </div>
               </div>
             </div>
+            <Footer />
           </div>
         );
       }

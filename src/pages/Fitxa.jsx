@@ -8,6 +8,8 @@ import "react-responsive-carousel/lib/styles/carousel.css";
 import "../pages/css/Fitxa.css";
 import Breadcrumb from "react-bootstrap/Breadcrumb";
 import Traduccio from "../components/Traduccio";
+import { Helmet } from "react-helmet";
+import Footer from "../components/Footer";
 
 class Fitxa extends Component {
   constructor(props) {
@@ -21,8 +23,7 @@ class Fitxa extends Component {
       codiFam: "",
       preu: "",
       quant: 1,
-
-
+      carregant: true,
     };
     if (props != null) {
       if (props.match.params.codi != null) {
@@ -93,124 +94,156 @@ class Fitxa extends Component {
       familia: infoProd.familia.description,
       codiFam: infoProd.familia.pk.codi,
       preu: preu,
+      carregant: false,
     });
   }
 
   render() {
-    return (
-      <div>
-        <Header
-          canviarLlenguatge={this.props.canviarLlenguatge}
-          count={this.props.count}
-        />
-        <div className="container fitxa">
-          <div className="row">
-            <div className="col-md-5">
-              <div className="carousel-wrapper">
-                <Carousel showStatus={false} showIndicators={false}>
-                  {this.state.info.map(function (articles, index) {
-                    return (
-                      <div>
-                        <img
-                          key={articles.rutaInforme}
-                          src={
-                            "https://aguilo-botiga.limit.es/api/ecomfront/image/show/" +
-                            articles.rutaInforme
-                          }
-                          alt={articles.descripcio}
-                        />
-                      </div>
-                    );
-                  })}
-                </Carousel>
+    if (this.state.carregant) {
+      return (
+        <div>
+          <Header
+            canviarLlenguatge={this.props.canviarLlenguatge}
+            count={this.props.count}
+          />
+          <Helmet>
+            <title> Embutidos La Luna Sóller</title>
+          </Helmet>
+          <div className="container margeCarregant">
+            <div className="text-center text-primary mt-5">
+              <div className="spinner-border" role="status">
+                <span className="sr-only">Loading...</span>
               </div>
             </div>
-            <div className="col-md-7">
-              <div className="container">
-                <div className="row">
-                  <div className="col">
-                    <Breadcrumb>
-                      <Breadcrumb.Item href="/">
-                        <Traduccio string="list.familias" />
-                      </Breadcrumb.Item>
-                      <Breadcrumb.Item href={"/familia/" + this.state.codiFam}>
-                        {this.state.familia}
-                      </Breadcrumb.Item>
-                      <Breadcrumb.Item active>
-                        <strong>
-                          {" "}
-                          {this.state.infoProducte.descripcioCurta}
-                        </strong>
-                      </Breadcrumb.Item>
-                    </Breadcrumb>
-                    <h3 className="titolFitxa text-primary">
-                      {this.state.infoProducte.descripcioCurta}
-                    </h3>
-                    <h5 className="descripcioFitxa">
-                      {" "}
-                      {this.state.infoProducte.descripcio}
-                    </h5>
-                    <div className="row rowPreu">
-                      <div className="col-6">
-                        <h2 className="preuFitxa text-primary">
-                          {this.state.preu} €{" "}
-                        </h2>
-                        <p className="ivaFitxa">
-                          {" "}
-                          <Traduccio string="fitxa.iva" />
-                        </p>
-                      </div>
-                    </div>
-                    <div className="row rowPreu">
-                      <div className="col-3 col-md-3 col-lg-2 mb-1">
-                        <input
-                          type="number"
-                          min="1"
-                          className="form-control number"
-                          defaultValue="1"
-                          onChange={(e) =>
-                            this.handleChange(parseInt(e.target.value))
-                          }
-                        />
-                      </div>
-                      <div className="col-sm-10 col-md-4 col-lg-5 mb-1">
-                        <a href="/carrito"
-                          className="btn btn-primary col"
-                          onClick={() =>
-                            this.props.afegirCistella(
-                              this.state.codi,
-                              this.state.quant,
-                              this.state.preu,
-                              this.state.infoProducte.decimalsPreu,
-                              this.state.infoProducte.decimalsPreuIva,
-                              this.state.infoProducte.descripcio,
-                              this.state.infoProducte.descripcioCurta,
-                              this.state.infoProducte.id,
-                              this.state.info[0].rutaInforme,
-                              this.state.infoProducte.iva.id,
-                              this.state.infoProducte.preuAmbIva,
-                              this.state.infoProducte.pvp,
-                              this.state.infoProducte.pvp
-          
-                            )
-                          }
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <Header
+            canviarLlenguatge={this.props.canviarLlenguatge}
+            count={this.props.count}
+          />
+          <Helmet>
+            <title>
+              {" "}
+              {`${this.state.infoProducte.descripcioCurta} - Embutidos La Luna Sóller`}{" "}
+            </title>
+          </Helmet>
+          <div className="container fitxa">
+            <div className="row">
+              <div className="col-md-5">
+                <div className="carousel-wrapper">
+                  <Carousel showStatus={false} showIndicators={false}>
+                    {this.state.info.map(function (articles) {
+                      return (
+                        <div key={articles.rutaInforme}>
+                          <img
+                            src={
+                              "https://aguilo-botiga.limit.es/api/ecomfront/image/show/" +
+                              articles.rutaInforme
+                            }
+                            alt={articles.descripcio}
+                          />
+                        </div>
+                      );
+                    })}
+                  </Carousel>
+                </div>
+              </div>
+              <div className="col-md-7">
+                <div className="container">
+                  <div className="row">
+                    <div className="col">
+                      <Breadcrumb>
+                        <Breadcrumb.Item href="/">
+                          <Traduccio string="list.familias" />
+                        </Breadcrumb.Item>
+                        <Breadcrumb.Item
+                          href={"/familia/" + this.state.codiFam}
                         >
-                          <Traduccio string="fitxa.añadir" />
-                        </a>
+                          {this.state.familia}
+                        </Breadcrumb.Item>
+                        <Breadcrumb.Item active>
+                          <strong>
+                            {" "}
+                            {this.state.infoProducte.descripcioCurta}
+                          </strong>
+                        </Breadcrumb.Item>
+                      </Breadcrumb>
+                      <h3 className="titolFitxa text-primary">
+                        {this.state.infoProducte.descripcioCurta}
+                      </h3>
+                      <h5 className="descripcioFitxa">
+                        {" "}
+                        {this.state.infoProducte.descripcio}
+                      </h5>
+                      <div className="row rowPreu">
+                        <div className="col-6">
+                          <h2 className="preuFitxa text-primary">
+                            {this.state.preu} €{" "}
+                          </h2>
+                          <p className="ivaFitxa">
+                            {" "}
+                            <Traduccio string="fitxa.iva" />
+                          </p>
+                        </div>
+                      </div>
+                      <div className="row rowPreu">
+                        <div className="col-3 col-md-3 col-lg-2 mb-1">
+                          <input
+                            type="number"
+                            min="1"
+                            className="form-control number"
+                            defaultValue="1"
+                            onChange={(e) =>
+                              this.handleChange(parseInt(e.target.value))
+                            }
+                          />
+                        </div>
+                        <div className="col-sm-10 col-md-4 col-lg-5 mb-1">
+                          <a
+                            href="/carrito"
+                            className="btn btn-primary col"
+                            onClick={() =>
+                              this.props.afegirCistella(
+                                this.state.codi,
+                                this.state.quant,
+                                this.state.preu,
+                                this.state.infoProducte.decimalsPreu,
+                                this.state.infoProducte.decimalsPreuIva,
+                                this.state.infoProducte.descripcio,
+                                this.state.infoProducte.descripcioCurta,
+                                this.state.infoProducte.id,
+                                this.state.info[0].rutaInforme,
+                                this.state.infoProducte.iva.id,
+                                this.state.infoProducte.preuAmbIva,
+                                this.state.infoProducte.pvp,
+                                this.state.infoProducte.pvp
+                              )
+                            }
+                          >
+                            <Traduccio string="fitxa.añadir" />
+                          </a>
                         </div>
                         <div className="col-sm-6 col-md-5 col-lg-4 mb-1">
-                        <a href="/" className="btn btn-outline-primary col"> <Traduccio string="carrito.seguirComprant" /></a>
+                          <a href="/" className="btn btn-outline-primary col">
+                            {" "}
+                            <Traduccio string="carrito.seguirComprant" />
+                          </a>
                         </div>
-                      
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <Footer />
         </div>
-      </div>
-    );
+      );
+    }
   }
 }
 

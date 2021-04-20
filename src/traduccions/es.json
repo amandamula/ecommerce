@@ -54,7 +54,23 @@
     "formulari.importMin": "El importe mínimo es :",
     "formulari.tancar": "Cerrar",
     "formulari.modDades" : "Modificar Datos",
-    "formulari.pagament" : "Pago"
+    "formulari.pagament" : "Pago",
+    "email.ok" : "Pedido realizado con éxito",
+    "email.hola" : "Hola",
+    "email.gracias" : "Gracias por hacer su compra en:",
+    "email.gestionado" : "Pedido gestionado correctamente con número:",
+    "email.confianza" : "Agradecemos mucho su confianza en nosotros",
+    "email.venedor" :  "Un cliente ha realizado un nuevo pedido",
+    "urlok.ok" : "Pedido realizado con éxito",
+    "urlok.pedido" : "Pedido gestionado correctamente con número: ",
+    "urlok.correu": "Recibira un correo de la confirmación de su pago en: " ,
+    "urlok.tornar": "Volver",
+    "urlok.error" : "Se ha producido un error. El pago no se ha efectuado.",
+    "urlko.error" : "Pedido pendiente de pago",
+    "urlko.problema" : "Ha habido un error en su pedido, pongase en contacto con nuestro servicio técnico, su número de pedido es: ",
+    "urlko.correu": "Correo de soporte técnico: " 
+
+
 
 
 

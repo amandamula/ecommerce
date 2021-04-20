@@ -16,7 +16,7 @@ class List extends Component {
   }
 
   canviarIcon() {
-    if (this.state.icon == "down") {
+    if (this.state.icon === "down") {
       this.setState({ icon: "up" });
       $("#collapseExample").collapse("show");
     } else {
@@ -28,7 +28,7 @@ class List extends Component {
   render() {
     const arrowStyle = {
       transition: "transform 0.5s",
-      transform: this.state.icon == "up" ? "rotate(180deg)" : "",
+      transform: this.state.icon === "up" ? "rotate(180deg)" : "",
     };
 
     return (
@@ -50,9 +50,9 @@ class List extends Component {
           </li>
 
           <div className="collapse show" id="collapseExample">
-            {this.props.info.map(function (families, index) {
+            {this.props.info.map(function (families) {
               return (
-                <li className="llista list-group-item">
+                <li key={families.codi} className="llista list-group-item">
                   <a href={"/familia/" + families.codi} className="linkLlista">
                     {families.descripcio}
                   </a>

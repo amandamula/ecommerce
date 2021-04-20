@@ -1,0 +1,25 @@
+
+.main-footer{
+    color: white;
+    background-color: #790726;
+    padding-top: 2%;
+    position: relative;
+    padding-bottom: 10px;
+    width: 100%;
+    text-align: center;
+
+    margin-top: 140px;
+}
+
+
+
+.text{
+    text-align: start !important;
+}
+
+.textFooter{
+    letter-spacing: 1px;
+    text-align: center !important;
+}
+
+

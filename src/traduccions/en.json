@@ -5,7 +5,7 @@
     "list.familias" : "FAMILIES",
     "list.productos" :  "ALL PRODUCTS",
     "index.titulo" : "Products La Luna",
-    "card.informacion" : "More information",
+    "card.informacion" : "More info",
     "fitxa.iva" : "VAT included",
     "fitxa.añadir" :  "Add to cart",
     "carrito.carrito" : "CART",
@@ -54,7 +54,23 @@
     "formulari.importMin": "The minimum amount is :",
     "formulari.tancar": "Close",
     "formulari.modDades": "Modify information",
-    "formulari.pagament" : "Payment"
+    "formulari.pagament" : "Payment",
+    "email.ok" : "Order placed successfully",
+    "email.hola" : "Hi",
+    "email.gracias" : "Thank you for shopping at",
+    "email.gestionado" : "Order managed correctly with number:",
+    "email.confianza" : "We really appreciate your trust in us",
+    "email.venedor" :  "A customer has placed a new order",
+    "urlok.ok" : "Successful order",
+    "urlok.pedido" : "Order managed correctly with number: ",
+    "urlok.correu": "You will receive an email confirming your payment at: " ,
+    "urlok.tornar": "Return",
+    "urlok.error" : "An error has occurred.",
+    "urlko.error" : "Order pending payment",
+    "urlko.problema" : "There has been an error in your order, contact our technical service, your order number is:",
+    "urlko.correu": "Technical support email:" 
+
+
 
 
 
