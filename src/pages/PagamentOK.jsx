@@ -39,70 +39,64 @@ class Pag extends Component {
     const pedido = params.get("r");
     const cost = params.get("i");
     const preu = cost / 10 / 10;
- 
+
     const pressupost = JSON.parse(sessionStorage.getItem("pressupost"));
 
     if (pressupost !== null) {
       if (pressupost["estat"] === "PENDENT") {
         if (pressupost["codi"] == pedido) {
-          /* const bestretes = await axios({
+          const bestretes = await axios({
             method: "post",
-            url: "https://aguilo.limit.es/api/ecom/bestretes",
+            url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/bestretes`,
             data: {
               numero: null,
-				      caixa: { id: pressupost['puntVenda']['id']},
-				      descripcio: 'Pagament',
-				      dia: pressupost['data'],
-			      	est: 0,
-			  	    pressupost: { id: pressupost['id']},
-              preuAmbIva: preu
-            
+              caixa: { id: pressupost["puntVenda"]["id"] },
+              descripcio: "Pagament",
+              dia: pressupost["data"],
+              est: 0,
+              pressupost: { id: pressupost["id"] },
+              preuAmbIva: preu,
             },
-              headers: {
+            headers: {
               Authorization: `${localStorage.getItem(
                 "tokenType"
               )} ${localStorage.getItem("resposta")}`,
             },
           });
 
-     
           const CaixaMoviment = await axios({
             method: "post",
-            url: "https://aguilo.limit.es/api/ecom/caixesMoviment",
+            url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/caixesMoviment`,
             data: {
               anc: true,
               numero: null,
               caixa: {
-                id:  pressupost['puntVenda']['id']
+                id: pressupost["puntVenda"]["id"],
               },
               cls: "0",
-              dia: pressupost['data'],
+              dia: pressupost["data"],
               documentPagamentCobrament: {
-                id: pressupost['documentPagamentCobrament']['id']
+                id: pressupost["documentPagamentCobrament"]["id"],
               },
               divisa: {
-                id: pressupost['divisa']['id']
+                id: pressupost["divisa"]["id"],
               },
               operari: {
-                id: pressupost['operari']['id']
+                id: pressupost["operari"]["id"],
               },
               pressupost: {
-                id: pressupost['id']
+                id: pressupost["id"],
               },
-              preuAmbIva:preu,
-              trs:false,
-              valorDivisaEuros:10
-              
-            
+              preuAmbIva: preu,
+              trs: false,
+              valorDivisaEuros: 10,
             },
-              headers: {
+            headers: {
               Authorization: `${localStorage.getItem(
                 "tokenType"
               )} ${localStorage.getItem("resposta")}`,
             },
           });
-
-*/
 
           const obj = JSON.parse(sessionStorage.getItem("pressupost"));
           obj.estat = "ACCEPTAT";
@@ -111,7 +105,7 @@ class Pag extends Component {
 
           const p = await axios({
             method: "put",
-            url: `https://aguilo.limit.es/api/ecom/pressupostos/${idPressupost}`,
+            url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/pressupostos/${idPressupost}`,
             data: obj,
             headers: {
               Authorization: `${localStorage.getItem(
@@ -121,7 +115,7 @@ class Pag extends Component {
           });
 
           const pressupostLinies = await axios.get(
-            `https://aguilo.limit.es/api/ecom/pressupostosLinia?query=pressupost.codi==${pedido}&page=undefined&size=100`,
+            `${process.env.REACT_APP_API_DOMAIN}/api/ecom/pressupostosLinia?query=pressupost.codi==${pedido}&page=undefined&size=100`,
             {
               headers: {
                 Authorization: `${localStorage.getItem(
@@ -155,12 +149,10 @@ class Pag extends Component {
           </div>
       </div>`;
 
-      const headerVenedor = `<div class="container">
+          const headerVenedor = `<div class="container">
 			<div class="row text-center">
 				<div class="col-sm-6 col-sm-offset-3">       				
-					<h2 style="color:#0fad00">${this.traduir(
-            "email.venedor"
-          )}</h2>				
+					<h2 style="color:#0fad00">${this.traduir("email.venedor")}</h2>				
 				</div>
 			</div>
 		</div>`;
@@ -232,10 +224,14 @@ class Pag extends Component {
               pressupost["pais"]["description"]
             } </td>
             <td style="text-align: left;">${
-              pressupost.provincia === undefined ? "" :  pressupost.provincia.description
+              pressupost.provincia === undefined
+                ? ""
+                : pressupost.provincia.description
             } </td>
             <td style="text-align: left;">${
-              pressupost.codiPostal === undefined ? "" :  pressupost.codiPostal.description
+              pressupost.codiPostal === undefined
+                ? ""
+                : pressupost.codiPostal.description
             } </td>     
           </tr>
          
@@ -278,7 +274,9 @@ class Pag extends Component {
             pressupost.pisDomicili === undefined ? "" : pressupost.pisDomicili
           } </td>
           <td style="text-align: left;">${
-            pressupost.portaDomicili === undefined ? "" : pressupost.portaDomicili
+            pressupost.portaDomicili === undefined
+              ? ""
+              : pressupost.portaDomicili
           } </td>
   
       </tr>
@@ -338,46 +336,65 @@ class Pag extends Component {
     <tr>
       `;
 
-      const footerCorreuClient = `<div class="container">
+          const footerCorreuClient = `<div class="container">
       <div class="row text-center">
          <div class="col-sm-6 col-sm-offset-3">
-         <p style="font-size:20px;color:#5C5C5C;">${this.traduir("email.confianza")}</p>			
+         <p style="font-size:20px;color:#5C5C5C;">${this.traduir(
+           "email.confianza"
+         )}</p>			
        </div>
       </div>
   </div>`;
 
-      let liniesCorreu = ``;
-      console.log(linies);
+          let liniesCorreu = ``;
+          console.log(linies);
 
+          for (var i = 0; i < linies.length; i++) {
+            console.log(linies);
 
-      for(var i = 0 ; i < linies.length; i++){
-        console.log(linies);
+            liniesCorreu =
+              liniesCorreu +
+              `<td>${
+                linies[i].descripcio
+              }</td><td style="text-align: right;">${linies[
+                i
+              ].preuAmbIva.toFixed(2)} € </td>
+        <td style="text-align: center;">${linies[i].unitats}</td> `;
 
-        liniesCorreu = liniesCorreu + `<td>${linies[i].descripcio}</td><td style="text-align: right;">${linies[i].preuAmbIva.toFixed(2)} € </td>
-        <td style="text-align: center;">${ linies[i].unitats }</td> `;
+            var totalPerProducte = linies[i].unitats * linies[i].preuAmbIva;
 
-        var totalPerProducte = linies[i].unitats * linies[i].preuAmbIva;
+            liniesCorreu =
+              liniesCorreu +
+              `<td style="text-align: right;">${parseFloat(
+                totalPerProducte.toString()
+              ).toFixed(2)} € </td>`;
 
-        liniesCorreu = liniesCorreu + `<td style="text-align: right;">${ parseFloat((totalPerProducte.toString())).toFixed(2)} € </td>`
-
-        if(i < linies.length - 1){
-          liniesCorreu = liniesCorreu + `</tr><tr>`;
-        }  
-      }
-      liniesCorreu = liniesCorreu + `</tr>`;
-      liniesCorreu = liniesCorreu +`<tr></tr><tr></tr>`;
-      liniesCorreu = liniesCorreu + `<tr><td style ="font-weight: bold;"><h2>${this.traduir("carrito.total")}:</h2></td><td></td><td></td><td style ="font-weight: bold;text-align: right;"><h2>${preu.toFixed(2)} €</h2></td></tr></tbody></table>`;
-
-      
+            if (i < linies.length - 1) {
+              liniesCorreu = liniesCorreu + `</tr><tr>`;
+            }
+          }
+          liniesCorreu = liniesCorreu + `</tr>`;
+          liniesCorreu = liniesCorreu + `<tr></tr><tr></tr>`;
+          liniesCorreu =
+            liniesCorreu +
+            `<tr><td style ="font-weight: bold;"><h2>${this.traduir(
+              "carrito.total"
+            )}:</h2></td><td></td><td></td><td style ="font-weight: bold;text-align: right;"><h2>${preu.toFixed(
+              2
+            )} €</h2></td></tr></tbody></table>`;
 
           const correuClient = await axios({
             method: "post",
-            url: `https://aguilo.limit.es/api/ecomfront/sendEmail/send`,
+            url: `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/sendEmail/send`,
             data: {
-              body: headCorreuComprador + bodyCorreu + liniesCorreu + footerCorreuClient,
+              body:
+                headCorreuComprador +
+                bodyCorreu +
+                liniesCorreu +
+                footerCorreuClient,
               htmlBody: true,
               subject: `${this.traduir("email.ok")}: ${pedido}`,
-              to: "amula@limit.es",
+              to: `${pressupost.emailFactura}`,
               to_cc: "",
             },
             headers: {
@@ -387,12 +404,11 @@ class Pag extends Component {
             },
           });
 
-
-            const correuVenedor = await axios({
+          const correuVenedor = await axios({
             method: "post",
-            url: `https://aguilo.limit.es/api/ecomfront/sendEmail/send`,
+            url: `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/sendEmail/send`,
             data: {
-              body: headerVenedor + bodyCorreu + liniesCorreu ,
+              body: headerVenedor + bodyCorreu + liniesCorreu,
               htmlBody: true,
               subject: `${this.traduir("email.ok")}: ${pedido}`,
               to: "amula@limit.es",
@@ -411,18 +427,21 @@ class Pag extends Component {
           localStorage.removeItem("total");
           localStorage.removeItem("count");
           localStorage.removeItem("productesCart");
-          this.setState({ numPedido: pedido, email: pressupost["emailFactura"] });
 
+          this.setState({
+            numPedido: pedido,
+            email: pressupost["emailFactura"],
+          });
         } else {
-
+          window.location.href="/urlko";
           this.setState({ pagamentOK: false });
-
         }
-    
+       
+      
       }
+    
     }
-
-   
+    window.location.href="/urlko";
   }
   render() {
     if (this.state.pagamentOK) {
@@ -435,20 +454,24 @@ class Pag extends Component {
           <div className="container cardsCart marges">
             <h6 className="titolCartBuid">
               {" "}
-             <strong>  <Traduccio string="urlok.ok"/></strong> 
+              <strong>
+                {" "}
+                <Traduccio string="urlok.ok" />
+              </strong>
             </h6>
             <p className="mb-0 mt-4">
-            <Traduccio string="urlok.pedido"/>{this.state.numPedido}
+              <Traduccio string="urlok.pedido" />
+              {this.state.numPedido}
             </p>
             <p>
-            <Traduccio string="urlok.correu"/> {this.state.email}{" "}
+              <Traduccio string="urlok.correu" /> {this.state.email}{" "}
             </p>
             <a href="/" className="btn btn-primary mt-3 mb-5">
               {" "}
-              <Traduccio string="urlok.tornar"/>
+              <Traduccio string="urlok.tornar" />
             </a>
           </div>
-          <Footer/>
+          <Footer />
         </div>
       );
     } else {
@@ -461,14 +484,17 @@ class Pag extends Component {
           <div className="container cardsCart marges">
             <h6 className="titolCartBuid">
               {" "}
-            <strong> <Traduccio string="urlok.error"/></strong> 
+              <strong>
+                {" "}
+                <Traduccio string="urlok.error" />
+              </strong>
             </h6>
             <a href="/" className="btn btn-primary mt-3 mb-5">
               {" "}
-              <Traduccio string="urlok.tornar"/>
+              <Traduccio string="urlok.tornar" />
             </a>
           </div>
-          <Footer/>
+          <Footer />
         </div>
       );
     }

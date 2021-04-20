@@ -28,7 +28,7 @@ class LlistaPedido extends Component {
 
         const id = this.props.id;
 
-        const resp = await axios.get(`https://aguilo.limit.es/api/ecomfront/articles/detail/${id}?lang=${lang}`, {
+        const resp = await axios.get(`${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articles/detail/${id}?lang=${lang}`, {
             headers: { "Authorization": `Bearer ${localStorage.getItem("resposta")}` }
         });
 

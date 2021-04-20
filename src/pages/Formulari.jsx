@@ -71,7 +71,7 @@ class FormulariPedido extends Component {
     this.setState({ altresPob: false, altresProv: false });
 
     const provincies = await axios.get(
-      `https://aguilo.limit.es/api/ecom/provincies?query=pais.codi==${codi}&page=0&size=100`,
+      `${process.env.REACT_APP_API_DOMAIN}/api/ecom/provincies?query=pais.codi==${codi}&page=0&size=100`,
       {
         headers: {
           Authorization: `${localStorage.getItem(
@@ -104,7 +104,7 @@ class FormulariPedido extends Component {
       this.setState({ altresProv: false });
 
       const poblacions = await axios.get(
-        `https://aguilo.limit.es/api/ecom/codisPostal?query=provincia.codi==${valorSeleccionat}&page=0&size=100`,
+        `${process.env.REACT_APP_API_DOMAIN}/api/ecom/codisPostal?query=provincia.codi==${valorSeleccionat}&page=0&size=100`,
         {
           headers: {
             Authorization: `${localStorage.getItem(
@@ -193,7 +193,7 @@ class FormulariPedido extends Component {
       }
 
       const puntVenta = await axios.get(
-        "https://aguilo.limit.es/api/ecom/puntsVenda/eyJpZGVudGlmaWNhZG9yQ29kaSI6IjgzMDAiLCJjb2RpIjoiMDEwMCIsImVtcHJlc2FDb2RpIjoiMDAwMSJ9",
+        `${process.env.REACT_APP_API_DOMAIN}/api/ecom/puntsVenda/eyJpZGVudGlmaWNhZG9yQ29kaSI6IjgzMDAiLCJjb2RpIjoiMDEwMCIsImVtcHJlc2FDb2RpIjoiMDAwMSJ9`,
         {
           headers: {
             Authorization: `${localStorage.getItem(
@@ -207,7 +207,7 @@ class FormulariPedido extends Component {
 
       const divisa = venta.divisa.id;
       const respostaDivises = await axios.get(
-        `https://aguilo.limit.es/api/ecom/divises/${divisa}`,
+        `${process.env.REACT_APP_API_DOMAIN}/api/ecom/divises/${divisa}`,
         {
           headers: {
             Authorization: `${localStorage.getItem(
@@ -218,7 +218,7 @@ class FormulariPedido extends Component {
       );
 
       const idiomes = await axios.get(
-        `https://aguilo.limit.es/api/ecom/idiomes?query=codiIso=ic=${lang}&page=0&size=100`,
+        `${process.env.REACT_APP_API_DOMAIN}/api/ecom/idiomes?query=codiIso=ic=${lang}&page=0&size=100`,
         {
           headers: {
             Authorization: `${localStorage.getItem(
@@ -253,7 +253,7 @@ class FormulariPedido extends Component {
       try {
         const pressupost = await axios({
           method: "post",
-          url: "https://aguilo.limit.es/api/ecom/pressupostos",
+          url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/pressupostos`,
           data: {
             codi: null,
             versio: 0,
@@ -320,7 +320,7 @@ class FormulariPedido extends Component {
       for (var i = 0; i < this.state.productes.length; i++) {
         const linia = await axios({
           method: "post",
-          url: "https://aguilo.limit.es/api/ecom/pressupostosLinia",
+          url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/pressupostosLinia`,
           data: {
             article: { id: this.state.productes[i]["id"] },
             decimalsPreuCataleg: this.state.productes[i][
@@ -359,7 +359,7 @@ class FormulariPedido extends Component {
         const costRepartiment = this.importRepartiment();
 
         const gastosEnvio = await axios.get(
-          `https://aguilo.limit.es/api/ecomfront/articles?query=codi=='GASTOS_ENVIO'`,
+          `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articles?query=codi=='GASTOS_ENVIO'`,
           {
             headers: {
               Authorization: `${localStorage.getItem(
@@ -373,7 +373,7 @@ class FormulariPedido extends Component {
 
         const gastosEnvioLinea = await axios({
           method: "post",
-          url: "https://aguilo.limit.es/api/ecom/pressupostosLinia",
+          url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/pressupostosLinia`,
           data: {
             article: { id: gastos.id },
             decimalsPreuCataleg: gastos.decimalsPreuIva,
@@ -526,7 +526,7 @@ class FormulariPedido extends Component {
     if (productes != null) {
       const resposta = await axios({
         method: "post",
-        url: "https://aguilo.limit.es/api/auth/refresh",
+        url: `${process.env.REACT_APP_API_DOMAIN}/api/auth/refresh`,
         data: {
           token: localStorage.getItem("token"),
           session: { e: "645", i: "643" },
@@ -542,7 +542,7 @@ class FormulariPedido extends Component {
       localStorage.setItem("resposta", tokenRefresh.token);
 
       const paisos = await axios.get(
-        `https://aguilo.limit.es/api/ecom/paisos?page=0&size=100`,
+        `${process.env.REACT_APP_API_DOMAIN}/api/ecom/paisos?page=0&size=100`,
         {
           headers: {
             Authorization: `${localStorage.getItem(
@@ -555,7 +555,7 @@ class FormulariPedido extends Component {
       const paiss = paisos.data;
 
       const paisosNif = await axios.get(
-        `https://aguilo.limit.es/api/ecom/paisosNif?page=0&size=100`,
+        `${process.env.REACT_APP_API_DOMAIN}/api/ecom/paisosNif?page=0&size=100`,
         {
           headers: {
             Authorization: `${localStorage.getItem(
@@ -568,7 +568,7 @@ class FormulariPedido extends Component {
       const paisNif = paisosNif.data;
 
       const tipusAdreces = await axios.get(
-        `https://aguilo.limit.es/api/ecom/tipusAdreces?page=0&size=100`,
+        `${process.env.REACT_APP_API_DOMAIN}/api/ecom/tipusAdreces?page=0&size=100`,
         {
           headers: {
             Authorization: `${localStorage.getItem(
@@ -1216,7 +1216,7 @@ class FormulariPedido extends Component {
                                         required
                                         defaultValue={
                                           this.state.poblacio !== "altres"
-                                            ? this.state.poblacio
+                                            ? this.state.poblacio2
                                             : ""
                                         }
                                         onChange={(e) =>
@@ -1281,7 +1281,7 @@ class FormulariPedido extends Component {
                                       required
                                       defaultValue={
                                         this.state.poblacio !== "altres"
-                                          ? this.state.poblacio
+                                          ? this.state.poblacio2
                                           : ""
                                       }
                                       onChange={(e) =>

@@ -47,7 +47,7 @@ class Fitxa extends Component {
 
     const resposta = await axios({
       method: "post",
-      url: "https://aguilo.limit.es/api/auth/refresh",
+      url: `${process.env.REACT_APP_API_DOMAIN}/api/auth/refresh`,
       data: {
         token: localStorage.getItem("token"),
         session: { e: "645", i: "643" },
@@ -63,7 +63,7 @@ class Fitxa extends Component {
     localStorage.setItem("resposta", tokenRefresh.token);
 
     const res = await axios.get(
-      `https://aguilo.limit.es/api/ecom/articlesInformacio?query=article.codi==${this.state.codi}&page=0&size=100&lang=${lang}`,
+      `${process.env.REACT_APP_API_DOMAIN}/api/ecom/articlesInformacio?query=article.codi==${this.state.codi}&page=0&size=100&lang=${lang}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("resposta")}`,
@@ -76,7 +76,7 @@ class Fitxa extends Component {
     const id = info._embedded.articleInformacios[0].article.id;
 
     const resp = await axios.get(
-      `https://aguilo.limit.es/api/ecomfront/articles/detail/${id}?lang=${lang}`,
+      `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articles/detail/${id}?lang=${lang}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("resposta")}`,
@@ -141,7 +141,7 @@ class Fitxa extends Component {
                         <div key={articles.rutaInforme}>
                           <img
                             src={
-                              "https://aguilo-botiga.limit.es/api/ecomfront/image/show/" +
+                              process.env.REACT_APP_API_DOMAIN_IMAGE + "/" +
                               articles.rutaInforme
                             }
                             alt={articles.descripcio}

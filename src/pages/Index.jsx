@@ -49,7 +49,7 @@ class Index extends Component {
     const lang = localStorage.getItem("idioma");
 
     const res = await axios.get(
-      "https://aguilo.limit.es/api/auth?user=adminaguilo&pass=adminaguilo",
+      `${process.env.REACT_APP_API_DOMAIN}/api/auth?user=adminaguilo&pass=adminaguilo`,
       {}
     );
 
@@ -60,7 +60,7 @@ class Index extends Component {
 
     const resp = await axios({
       method: "post",
-      url: "https://aguilo.limit.es/api/auth/refresh",
+      url: `${process.env.REACT_APP_API_DOMAIN}/api/auth/refresh`,
       data: {
         token: localStorage.getItem("token"),
         session: { e: "645", i: "643" },
@@ -76,7 +76,7 @@ class Index extends Component {
     localStorage.setItem("resposta", tokenRefresh.token);
 
     const articles = await axios.get(
-      `https://aguilo.limit.es/api/ecomfront/articles?query=bloquejat==false&page=0&size=100&lang=${lang}&sort=familia.descripcio,ASC&sort=descripcioCurta,ASC`,
+      `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articles?query=bloquejat==false&page=0&size=100&lang=${lang}&sort=familia.descripcio,ASC&sort=descripcioCurta,ASC`,
       {
         headers: {
           Authorization: `${localStorage.getItem(
@@ -89,7 +89,7 @@ class Index extends Component {
     const productes = articles.data;
 
     const resFam = await axios.get(
-      `https://aguilo.limit.es/api/ecomfront/articlesFamilia?page=0&size=100&lang=${lang}`,
+      `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articlesFamilia?page=0&size=100&lang=${lang}`,
       {
         headers: {
           Authorization: `${localStorage.getItem(
@@ -110,7 +110,7 @@ class Index extends Component {
     if (this.state.filtrat) {
       this.setState({ carregant: true });
       const respFiltrat = await axios.get(
-        `https://aguilo.limit.es/api/ecomfront/articles?query=familia.codi=ic=${this.state.codiFam};bloquejat==false&page=0&size=100&lang=${lang}&sort=familia.descripcio,ASC&sort=descripcioCurta,ASC`,
+        `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articles?query=familia.codi=ic=${this.state.codiFam};bloquejat==false&page=0&size=100&lang=${lang}&sort=familia.descripcio,ASC&sort=descripcioCurta,ASC`,
         {
           headers: {
             Authorization: `${localStorage.getItem(
