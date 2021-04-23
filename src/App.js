@@ -10,6 +10,7 @@ import Carrito from './pages/Carrito';
 import Formulari from './pages/Formulari';
 import PagamentOK from './pages/PagamentOK';
 import PagamentKO from './pages/PagamentKO';
+import FormulariRegistre from './pages/FormulariRegistre';
 
 
 
@@ -211,6 +212,7 @@ class App extends Component {
             <Route exact path="/pedido/:pagament" render={() => <Formulari key={"Formulari-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
             <Route exact path="/urlok" render={() => <PagamentOK key={"PagamentOk-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
             <Route exact path="/urlko" render={() => <PagamentKO key={"PagamentKo-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
+            <Route exact path="/registre" render={() => <FormulariRegistre key={"Registre-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge}  contador={this.actualizarContador} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
 
           </div>
 

@@ -1,22 +1,19 @@
 import React, { Component, createRef } from "react";
-import Traduccio from "../components/Traduccio";
-import Header from "../components/HeaderNou";
-import "./css/Carrito.css";
-import "./css/FormulariPedido.css";
 import { withRouter } from "react-router-dom";
+import Header from "../components/HeaderNou";
 import axios from "axios";
+import Traduccio from "../components/Traduccio";
+
 import $ from "jquery";
-import Footer from "../components/Footer";
 import WarningRoundedIcon from "@material-ui/icons/WarningRounded";
-import LlistaPedido from "../components/LlistaPedido";
-import Pag from "../components/Pagament";
-import KeyboardArrowDownOutlinedIcon from "@material-ui/icons/KeyboardArrowDownOutlined";
-import { Modal } from "react-bootstrap";
 import en from "../traduccions/en.json";
 import ca from "../traduccions/ca.json";
 import es from "../traduccions/es.json";
+import PeopleIcon from "@material-ui/icons/People";
+import DoneIcon from "@material-ui/icons/Done";
+import SendIcon from "@material-ui/icons/Send";
 
-class FormulariPedido extends Component {
+class FormulariRegistre extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -29,16 +26,13 @@ class FormulariPedido extends Component {
       altresProv: false,
       poblacions: [],
       altresPob: false,
-      pagament: false,
       pedido: "",
       mostrar1: false,
       mostrar2: false,
       mostrar3: true,
       pressupost: [],
-      importEnvio: "",
-      show: false,
       lang: "",
-      descripcioGastos: "",
+
       idiomes: {
         en,
         ca,
@@ -47,37 +41,21 @@ class FormulariPedido extends Component {
     };
 
     this.form = createRef();
-
     this.handleChange = this.handleChange.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.canviarPoblacio = this.canviarPoblacio.bind(this);
     this.submit = this.submit.bind(this);
     this.canviarPattern = this.canviarPattern.bind(this);
     this.agafarValorsForm = this.agafarValorsForm.bind(this);
-    this.agafarValorResum = this.agafarValorResum.bind(this);
-    this.canviarIcon = this.canviarIcon.bind(this);
-    this.canviarIcon2 = this.canviarIcon2.bind(this);
-    this.canviarIcon3 = this.canviarIcon3.bind(this);
-    this.tornarDades = this.tornarDades.bind(this);
     this.traduir = this.traduir.bind(this);
-
-
-    if (props != null) {
-      if (props.match.params.pagament != null) {
-        this.state.pagament = true;
-      }
-    }
   }
 
- 
+  traduir(string) {
+    const lang = localStorage.getItem("idioma");
 
-traduir(string) {
-  const lang = localStorage.getItem("idioma");
+    return this.state.idiomes[lang][string];
+  }
 
-  return this.state.idiomes[lang][string];
-}
-
-  // Carregam les provincies en funció del codi del pais.
   async handleChange(codi) {
     $("#prov").val("");
     this.setState({ altresPob: false, altresProv: false });
@@ -164,15 +142,6 @@ traduir(string) {
     });
   }
 
-  agafarValorResum(id, valor) {
-    this.setState({
-      [id + "2"]: valor,
-    });
-    console.log(valor.target);
-  }
-
-  // feim la validació de formulari i si és vàlid, feim el POST.
-
   async submit(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -191,341 +160,44 @@ traduir(string) {
   async peticions() {
     const lang = localStorage.getItem("idioma");
 
-    const importMinim = this.importEnvioMinim();
-    const importEnvioGratis = this.importEnvioGratis();
-    let afegirImportEnvio = false;
-
-    if (this.props.total < importMinim) {
-      this.setState({ show: true });
-    } else {
-      if (this.props.total >= importEnvioGratis) {
-        afegirImportEnvio = false;
-      } else {
-        afegirImportEnvio = true;
+    const puntVenta = await axios.get(
+      `${process.env.REACT_APP_API_DOMAIN}/api/ecom/puntsVenda/${process.env.REACT_APP_PUNTVENTA_ID}`,
+      {
+        headers: {
+          Authorization: `${localStorage.getItem(
+            "tokenType"
+          )} ${localStorage.getItem("resposta")}`,
+        },
       }
+    );
 
-      const puntVenta = await axios.get(
-        `${process.env.REACT_APP_API_DOMAIN}/api/ecom/puntsVenda/${process.env.REACT_APP_PUNTVENTA_ID}`,
-        {
-          headers: {
-            Authorization: `${localStorage.getItem(
-              "tokenType"
-            )} ${localStorage.getItem("resposta")}`,
-          },
-        }
-      );
+    const venta = puntVenta.data;
 
-      const venta = puntVenta.data;
-
-      const divisa = venta.divisa.id;
-      const respostaDivises = await axios.get(
-        `${process.env.REACT_APP_API_DOMAIN}/api/ecom/divises/${divisa}`,
-        {
-          headers: {
-            Authorization: `${localStorage.getItem(
-              "tokenType"
-            )} ${localStorage.getItem("resposta")}`,
-          },
-        }
-      );
-
-      const idiomes = await axios.get(
-        `${process.env.REACT_APP_API_DOMAIN}/api/ecom/idiomes?query=codiIso=ic=${lang}&page=0&size=100`,
-        {
-          headers: {
-            Authorization: `${localStorage.getItem(
-              "tokenType"
-            )} ${localStorage.getItem("resposta")}`,
-          },
-        }
-      );
-      const divises = respostaDivises.data;
-      const idioma = idiomes.data;
-      const idiomaId = idioma._embedded.idiomas[0].id;
-
-      let escala = null;
-      let pis = null;
-      let porta = null;
-
-      if (this.state.escala) {
-        escala = this.state.escala;
-      } else {
-        escala = null;
+    const divisa = venta.divisa.id;
+    const respostaDivises = await axios.get(
+      `${process.env.REACT_APP_API_DOMAIN}/api/ecom/divises/${divisa}`,
+      {
+        headers: {
+          Authorization: `${localStorage.getItem(
+            "tokenType"
+          )} ${localStorage.getItem("resposta")}`,
+        },
       }
-      if (this.state.pis) {
-        pis = this.state.pis;
+    );
+
+    const idiomes = await axios.get(
+      `${process.env.REACT_APP_API_DOMAIN}/api/ecom/idiomes?query=codiIso=ic=${lang}&page=0&size=100`,
+      {
+        headers: {
+          Authorization: `${localStorage.getItem(
+            "tokenType"
+          )} ${localStorage.getItem("resposta")}`,
+        },
       }
-      if (this.state.porta) {
-        porta = this.state.porta;
-      }
-
-      let dia = new Date();
-      dia = dia.toISOString();
-      let dni = this.state.numDocument.toUpperCase();
-      try {
-        const pressupost = await axios({
-          method: "post",
-          url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/pressupostos`,
-          data: {
-            codi: null,
-            versio: 0,
-            numero: null,
-            data: dia,
-            dataInici: dia,
-            estat: "PENDENT",
-            observacions: "Pago",
-            divisa: { id: divisa },
-            serieVenda: { id: venta.serie.id },
-            operari: { id: venta.operari.id },
-            magatzem: { id: venta.magatzem.id },
-            idioma: { id: idiomaId },
-            pais: { id: this.state.pais },
-            provincia: {},
-            codiPostal: {},
-            documentPagamentCobrament: {
-              id: venta.documentPagamentCobrament.id,
-            },
-            valorDivisaEuros: divises.valorEuros,
-            nomFiscal: this.state.nomUsuari,
-            nomClient: venta.client.description,
-            nomComercial: this.state.nomUsuari,
-            classe: "0",
-            tipusNif: this.state.document,
-            nif: dni,
-            nomDomicili: this.state.domicili,
-
-            numeroDomicili: this.state.num,
-            escalaDomicili: escala,
-            pisDomicili: pis,
-            portaDomicili: porta,
-            domiciliFiscal: this.state.domicili,
-            emailFactura: this.state.emailFactura,
-            codiPostalClient: {},
-            email: this.state.email,
-            telefon: this.state.telf,
-            tipusAdresa: { id: this.state.tipoVia },
-            paisNif: { id: this.state.paisNif },
-            puntVenda: { id: venta.id },
-            client: { id: venta.client.id },
-            empresa: { id: venta.empresa.id },
-          },
-          headers: {
-            Authorization: `${localStorage.getItem(
-              "tokenType"
-            )} ${localStorage.getItem("resposta")}`,
-          },
-        });
-        const pressup = pressupost.data;
-
-        sessionStorage.setItem("pressupost", JSON.stringify(pressup));
-        this.setState({ pressupost: pressup, pedido: pressup.codi });
-      } catch (error) {
-        var fallo = JSON.parse(error.request.responseText);
-
-        console.log(fallo.errors);
-        if (fallo.errors[0].code === "DocumentIdentitat") {
-          $("#numDocument").css("border", "1px solid red");
-          $(".dni .invalid-feedback").css("display", "inherit");
-        }
-      }
-
-      for (var i = 0; i < this.state.productes.length; i++) {
-        const linia = await axios({
-          method: "post",
-          url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/pressupostosLinia`,
-          data: {
-            article: { id: this.state.productes[i]["id"] },
-            decimalsPreuCataleg: this.state.productes[i][
-              "decimalsPreuSenseIva"
-            ],
-            decimalsPreuSenseIvaCataleg: this.state.productes[i][
-              "decimalsPreuCataleg"
-            ],
-            descripcio: this.state.productes[i]["descripcio"],
-            factorConversioSortides: 0,
-            iva: { id: this.state.productes[i]["ivaId"] },
-            pressupost: { id: this.state.pressupost.id },
-            preu: this.state.productes[i]["preuSenseIva"],
-            preuAmbIva: this.state.productes[i]["preu"],
-            preuCataleg: this.state.productes[i]["preuCataleg"],
-            preuSenseIVaCataleg: this.state.productes[i]["preuSenseIvaCataleg"],
-            preuTotalLinia: (
-              this.state.productes[i]["preuSenseIva"] *
-              this.state.productes[i]["unitats"]
-            ).toFixed(2),
-            preuTotalLiniaAmbIva: (
-              this.state.productes[i]["preu"] *
-              this.state.productes[i]["unitats"]
-            ).toFixed(2),
-            unitats: this.state.productes[i]["unitats"],
-          },
-          headers: {
-            Authorization: `${localStorage.getItem(
-              "tokenType"
-            )} ${localStorage.getItem("resposta")}`,
-          },
-        });
-      }
-
-      if (afegirImportEnvio) {
-        const costRepartiment = this.importRepartiment();
-
-        const gastosEnvio = await axios.get(
-          `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articles?query=codi=='GASTOS_ENVIO'`,
-          {
-            headers: {
-              Authorization: `${localStorage.getItem(
-                "tokenType"
-              )} ${localStorage.getItem("resposta")}`,
-            },
-          }
-        );
-
-        const gastos = gastosEnvio.data._embedded.articles[0];
-
-        const gastosEnvioLinea = await axios({
-          method: "post",
-          url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/pressupostosLinia`,
-          data: {
-            article: { id: gastos.id },
-            decimalsPreuCataleg: gastos.decimalsPreuIva,
-            decimalsPreuSenseIvaCataleg: gastos.decimalsPreu,
-            descripcio: gastos.descripcio,
-            factorConversioSortides: 0,
-            iva: { id: gastos.iva.id },
-            pressupost: { id: this.state.pressupost.id },
-            preu: gastos.pvp,
-            preuAmbIva: costRepartiment,
-            preuCataleg: costRepartiment,
-            preuSenseIVaCataleg: gastos.pvp,
-            preuTotalLinia: gastos.pvp.toFixed(2),
-            preuTotalLiniaAmbIva: costRepartiment.toFixed(2),
-            unitats: 1,
-          },
-          headers: {
-            Authorization: `${localStorage.getItem(
-              "tokenType"
-            )} ${localStorage.getItem("resposta")}`,
-          },
-        });
-
-        this.setState({
-          importEnvio: costRepartiment.toFixed(2),
-          descripcioGastos: gastos.descripcio,
-        });
-      }
-
-      this.setState({ pagament: true });
-    }
-  }
-
-  //Miram quin és l'import mínim per envio gratis, primer en funcio al C.P, després provincia i finalent Pais.
-  importEnvioGratis() {
-    if (this.state.poblacions !== null) {
-      for (var i = 0; i < this.state.poblacions.length; i++) {
-        if (this.state.poblacions[i]["id"] === this.state.poblacio) {
-          if (
-            this.state.poblacions[i]["importCompraNoPreuRepartiment"] !==
-            undefined
-          ) {
-            return this.state.poblacions[i]["importCompraNoPreuRepartiment"];
-          }
-        }
-      }
-    }
-
-    if (this.state.provincies !== null) {
-      for (var i = 0; i < this.state.provincies.length; i++) {
-        if (this.state.provincies[i]["id"] === this.state.prov) {
-          if (
-            this.state.provincies[i]["importCompraNoPreuRepartiment"] !==
-            undefined
-          ) {
-            return this.state.provincies[i]["importCompraNoPreuRepartiment"];
-          }
-        }
-      }
-    }
-
-    if (this.state.paisos !== null) {
-      for (var i = 0; i < this.state.paisos.length; i++) {
-        if (this.state.paisos[i]["id"] === this.state.pais) {
-          return this.state.paisos[i]["importCompraNoPreuRepartiment"];
-        }
-      }
-    }
-
-    return -1;
-  }
-
-  //mirar l'import minim per realitzar l'envio.
-  importEnvioMinim() {
-    if (this.state.poblacions !== null) {
-      for (var i = 0; i < this.state.poblacions.length; i++) {
-        if (this.state.poblacions[i]["id"] === this.state.poblacio) {
-          if (
-            this.state.poblacions[i]["importMinimRepartiment"] !== undefined
-          ) {
-            return this.state.poblacions[i]["importMinimRepartiment"];
-          }
-        }
-      }
-    }
-
-    if (this.state.provincies !== null) {
-      for (var i = 0; i < this.state.provincies.length; i++) {
-        if (this.state.provincies[i]["id"] === this.state.prov) {
-          if (
-            this.state.provincies[i]["importMinimRepartiment"] !== undefined
-          ) {
-            return this.state.provincies[i]["importMinimRepartiment"];
-          }
-        }
-      }
-    }
-
-    if (this.state.paisos !== null) {
-      for (var i = 0; i < this.state.paisos.length; i++) {
-        if (this.state.paisos[i]["id"] === this.state.pais) {
-          return this.state.paisos[i]["importMinimRepartiment"];
-        }
-      }
-    }
-
-    return -1;
-  }
-
-  //calcular el cost de l'enviament
-  importRepartiment() {
-    if (this.state.poblacions !== null) {
-      for (var i = 0; i < this.state.poblacions.length; i++) {
-        if (this.state.poblacions[i]["id"] === this.state.poblacio) {
-          if (this.state.poblacions[i]["importRepartiment"] !== undefined) {
-            return this.state.poblacions[i]["importRepartiment"];
-          }
-        }
-      }
-    }
-
-    if (this.state.provincies !== null) {
-      for (var i = 0; i < this.state.provincies.length; i++) {
-        if (this.state.provincies[i]["id"] === this.state.prov) {
-          if (this.state.provincies[i]["importRepartiment"] !== undefined) {
-            return this.state.provincies[i]["importRepartiment"];
-          }
-        }
-      }
-    }
-
-    if (this.state.paisos !== null) {
-      for (var i = 0; i < this.state.paisos.length; i++) {
-        if (this.state.paisos[i]["id"] === this.state.pais) {
-          return this.state.paisos[i]["importRepartiment"];
-        }
-      }
-    }
-
-    return -1;
+    );
+    const divises = respostaDivises.data;
+    const idioma = idiomes.data;
+    const idiomaId = idioma._embedded.idiomas[0].id;
   }
 
   async componentDidMount() {
@@ -599,104 +271,108 @@ traduir(string) {
     }
   }
 
-  // Canviam el icones de la pàgina de pagament.
-
-  canviarIcon() {
-    if (this.state.mostrar1) {
-      this.setState({ mostrar1: false });
-    } else {
-      this.setState({ mostrar1: true, mostrar2: false, mostrar3: false });
-    }
-  }
-
-  canviarIcon2() {
-    if (this.state.mostrar2) {
-      this.setState({ mostrar2: false });
-    } else {
-      this.setState({ mostrar2: true, mostrar1: false, mostrar3: false });
-    }
-  }
-
-  canviarIcon3() {
-    if (this.state.mostrar3) {
-      this.setState({ mostrar3: false });
-    } else {
-      this.setState({ mostrar3: true, mostrar2: false, mostrar1: false });
-    }
-  }
-
-  //
-  tornarDades() {
-    this.setState({ pagament: false });
-  }
-
   render() {
-    //Estils icones, transicions.
-    const arrowStyle = {
-      transition: "transform 0.5s",
-      transform: this.state.mostrar1 ? "rotate(180deg)" : "",
-    };
+    return (
+      <div>
+        <Header
+          canviarLlenguatge={this.props.canviarLlenguatge}
+          count={this.props.count}
+        />
+        <div className="container">
+          <div className="row">
+            <div className="col-md-12">
+              <div className="container">
+                <div className="row">
+                  <div className="col-12">
+                    <div className="container cardsCart">
+                      <form
+                        ref={this.form}
+                        onSubmit={this.submit}
+                        className="needs-validation"
+                        noValidate
+                      >
+                        <ul
+                          className="nav nav-pills mb-3"
+                          id="pills-tab"
+                          role="tablist"
+                        >
+                          <div className="container">
+                            <div className="row">
+                              <div className="col-md-4">
+                              <li className="nav-item" role="presentation">
+                                <a
+                                  class="nav-link active mb-4"
+                                  id="pills-home-tab"
+                                  data-toggle="pill"
+                                  href="#Dades-usuari"
+                                  role="tab"
+                                  aria-controls="pills-home"
+                                  aria-selected="true"
+                                  onClick={() =>
+                                    $("#pills-profile").removeClass(
+                                      "show active"
+                                    ) + $("#pills-home").addClass("show active") + $("#pills-home-tab").toggleClass("active")
+                                  }
+                                  style={{display:"inline" }}
+                                >
+                                  <PeopleIcon /><br/>
+                                </a>
+                               <p className="mt-3"> <Traduccio string="formulari.usuari"/></p>
+                              </li>
+                              </div>
+                              <div className="col-4">
+                              <li className="nav-item" role="presentation">
+                                <a
+                                  className="nav-link"
+                                  id="pills-profile-tab"
+                                  data-toggle="pill"
+                                  href="#Dades-enviament"
+                                  role="tab"
+                                  aria-controls="pills-profile"
+                                  aria-selected="false"
+                                  onClick={() =>
+                                    $("#pills-home").removeClass(
+                                      "show active"
+                                    ) +
+                                    $("#pills-profile").addClass("show active") + $(this).toggleClass("active")
+                                  }
+                                >
+                                  <SendIcon className="mr-2"/> {" "} <Traduccio string="formulari.envio"/>
+                                </a>
+                              </li>
+                              </div>
+                              <div className="col-4">
+                              <li className="nav-item" role="presentation">
+                                <a
+                                  class="nav-link"
+                                  id="pills-contact-tab"
+                                  data-toggle="pill"
+                                  href="#Correu-confirmacio"
+                                  role="tab"
+                                  aria-controls="pills-contact"
+                                  aria-selected="false"
+                                >
+                                  <DoneIcon className="mr-2"/> {" "} <Traduccio string="correu.confirm"/>
+                                </a>
+                              </li>
+                            </div>
+                            </div>
+                          </div>
+                        </ul>
 
-    const arrowStyle2 = {
-      transition: "transform 0.5s",
-      transform: this.state.mostrar2 ? "rotate(180deg)" : "",
-    };
-
-    const arrowStyle3 = {
-      transition: "transform 0.5s",
-      transform: this.state.mostrar3 ? "rotate(180deg)" : "",
-    };
-
-    const d = {
-      float: "right",
-    };
-
-    if (this.state.productes === null) {
-      return (
-        <div>
-          <Header
-            canviarLlenguatge={this.props.canviarLlenguatge}
-            count={this.props.count}
-          />
-          <div className="container cardsCart">
-            <h6 className="titolCartBuid">
-              {" "}
-              <Traduccio string="carrito.cistellaBuida" />.
-            </h6>
-            <a href="/" className="btn btn-primary mt-3 mb-5">
-              {" "}
-              <Traduccio string="carrito.veureArt" />
-            </a>
-          </div>
-        </div>
-      );
-    } else {
-      if (!this.state.pagament) {
-        return (
-          <div>
-            <Header
-              canviarLlenguatge={this.props.canviarLlenguatge}
-              count={this.props.count}
-            />
-            <div className="container">
-              <div className="row">
-                <div className="col-md-12 col-lg-8">
-                  <div className="container">
-                    <div className="row">
-                      <div className="col-12">
-                        <div className="container cardsCart">
-                          <form
-                            ref={this.form}
-                            onSubmit={this.submit}
-                            className="needs-validation"
-                            noValidate
+                        <div className="tab-content" id="pills-tabContent">
+                          <div
+                            className="tab-pane fade show active"
+                            id="pills-home"
+                            role="tabpanel"
+                            aria-labelledby="pills-home-tab"
                           >
                             <h4 className="titolCart2">
                               <Traduccio string="formulari.usuari" />
                             </h4>
 
                             <div className="row mt-4">
-                              <div className="col-md-8">
+                              <div className="col-md-4">
                                 <div className="form-group labelForm">
                                   <label
                                     htmlFor="nomUsuari"
@@ -755,6 +431,33 @@ traduir(string) {
                                   </div>
                                 </div>
                               </div>
+                              <div className="col-md-4">
+                                <div className="form-group labelForm">
+                                  <label htmlFor="email" className="labelForm">
+                                    <Traduccio string="formulari.email" /> *
+                                  </label>
+                                  <input
+                                    type="email"
+                                    id="email"
+                                    className="form-control input"
+                                    required
+                                    defaultValue={this.state.email}
+                                    onChange={(e) =>
+                                      this.agafarValorsForm(
+                                        e.target.id,
+                                        e.target.value
+                                      )
+                                    }
+                                  />
+                                  <div className="invalid-feedback">
+                                    <WarningRoundedIcon
+                                      fontSize="small"
+                                      className="mb-1"
+                                    />{" "}
+                                    <Traduccio string="formulari.campObl" />
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                             <div className="row">
                               <div className="col-md-4">
@@ -778,7 +481,7 @@ traduir(string) {
                                     }
                                   >
                                     <option selected disabled value="">
-                                    {this.traduir("formulari.opcio")}
+                                      {this.traduir("formulari.opcio")}
                                     </option>
                                     {this.state.paisosNif.map(function (
                                       pais,
@@ -825,7 +528,7 @@ traduir(string) {
                                     }
                                   >
                                     <option selected disabled value="">
-                                    {this.traduir("formulari.opcio")}
+                                      {this.traduir("formulari.opcio")}
                                     </option>
                                     <option value="NIF">NIF</option>
                                     <option value="NIF_operador">
@@ -837,9 +540,6 @@ traduir(string) {
                                     <option value="passaport">PASSAPORT</option>
                                     <option value="cert_residencia">
                                       CERTIFICAT RESIDENCIA FISCAL
-                                    </option>
-                                    <option value="altres">
-                                    {this.traduir("formulari.altres")}
                                     </option>
                                   </select>
                                   <div className="invalid-feedback">
@@ -888,33 +588,6 @@ traduir(string) {
                             <div className="row">
                               <div className="col-md-6">
                                 <div className="form-group labelForm">
-                                  <label htmlFor="email" className="labelForm">
-                                    <Traduccio string="formulari.email" /> *
-                                  </label>
-                                  <input
-                                    type="email"
-                                    id="email"
-                                    className="form-control input"
-                                    required
-                                    defaultValue={this.state.email}
-                                    onChange={(e) =>
-                                      this.agafarValorsForm(
-                                        e.target.id,
-                                        e.target.value
-                                      )
-                                    }
-                                  />
-                                  <div className="invalid-feedback">
-                                    <WarningRoundedIcon
-                                      fontSize="small"
-                                      className="mb-1"
-                                    />{" "}
-                                    <Traduccio string="formulari.campObl" />
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="col-md-6">
-                                <div className="form-group labelForm">
                                   <label
                                     htmlFor="emailFactura"
                                     className="labelForm"
@@ -945,7 +618,29 @@ traduir(string) {
                                 </div>
                               </div>
                             </div>
+                            <div className="row">
+                              <div className="col-md-3 offset-md-9 ">
+                                <a                                  
+                                  className="btn btn-primary mt-2 col"
+                                  onClick={() =>
+                                    $("#pills-home").removeClass(
+                                      "show active"
+                                    ) +
+                                    $("#pills-profile").addClass("show active") + $("#pills-profile-tab").addClass("active") + + $("#pills-home-tab").removeClass("active")
+                                  }
+                                >
+                                  <Traduccio string="formulari.següent" />
+                                </a>
+                              </div>
+                            </div>
 
+                          </div>
+                          <div
+                            class="tab-pane fade"
+                            id="pills-profile"
+                            role="tabpanel"
+                            aria-labelledby="pills-profile-tab"
+                          >
                             <h4 className="titolCart2 mt-5">
                               <Traduccio string="formulari.envio" />
                             </h4>
@@ -967,16 +662,12 @@ traduir(string) {
                                       ) +
                                       this.handleChange(
                                         e.target.value.split("&")[1]
-                                      ) +
-                                      this.agafarValorResum(
-                                        e.target.id,
-                                        e.target.value.split("&")[2]
                                       )
                                     }
                                     required
                                   >
                                     <option selected disabled value="">
-                                    {this.traduir("formulari.opcio")}
+                                      {this.traduir("formulari.opcio")}
                                     </option>
                                     {this.state.paisos.map(function (
                                       paisos,
@@ -985,13 +676,7 @@ traduir(string) {
                                       return (
                                         <option
                                           key={paisos.codi}
-                                          value={
-                                            paisos.id +
-                                            "&" +
-                                            paisos.codi +
-                                            "&" +
-                                            paisos.nom
-                                          }
+                                          value={paisos.id + "&" + paisos.codi}
                                         >
                                           {paisos.nom}
                                         </option>
@@ -1023,16 +708,12 @@ traduir(string) {
                                       this.agafarValorsForm(
                                         e.target.id,
                                         e.target.value.split("&")[0]
-                                      ) +
-                                      this.agafarValorResum(
-                                        e.target.id,
-                                        e.target.value.split("&")[2]
                                       )
                                     }
                                     required
                                   >
                                     <option selected disabled value="">
-                                    {this.traduir("formulari.opcio")}
+                                      {this.traduir("formulari.opcio")}
                                     </option>
 
                                     {this.state.provincies.length > 0 &&
@@ -1043,21 +724,15 @@ traduir(string) {
                                         return (
                                           <option
                                             key={prov.codi}
-                                            value={
-                                              prov.id +
-                                              "&" +
-                                              prov.codi +
-                                              "&" +
-                                              prov.nom
-                                            }
+                                            value={prov.id + "&" + prov.codi}
                                           >
                                             {prov.nom}
                                           </option>
                                         );
                                       })}
 
-                                    <option value={"altres&altres&altres"}>
-                                    {this.traduir("formulari.altres")}
+                                    <option value={"altres&altres"}>
+                                      {this.traduir("formulari.altres")}
                                     </option>
                                   </select>
                                   <div className="invalid-feedback">
@@ -1091,16 +766,12 @@ traduir(string) {
                                         this.agafarValorsForm(
                                           e.target.id,
                                           e.target.value.split("&")[0]
-                                        ) +
-                                        this.agafarValorResum(
-                                          e.target.id,
-                                          e.target.value.split("&")[1]
                                         )
                                       }
                                       required
                                     >
                                       <option selected disabled value="">
-                                      {this.traduir("formulari.opcio")}
+                                        {this.traduir("formulari.opcio")}
                                       </option>
 
                                       {this.state.poblacions.length > 0 &&
@@ -1123,7 +794,7 @@ traduir(string) {
                                         })}
 
                                       <option value={"altres&altres"}>
-                                      {this.traduir("formulari.altres")}
+                                        {this.traduir("formulari.altres")}
                                       </option>
                                     </select>
                                     <div className="invalid-feedback">
@@ -1154,10 +825,6 @@ traduir(string) {
                                         defaultValue={this.state.provincia}
                                         onChange={(e) =>
                                           this.agafarValorsForm(
-                                            e.target.id,
-                                            e.target.value
-                                          ) +
-                                          this.agafarValorResum(
                                             e.target.id,
                                             e.target.value
                                           )
@@ -1323,7 +990,12 @@ traduir(string) {
                                     }
                                   >
                                     <option selected disabled value="">
-                                    {this.traduir("formulari.opcio")}
+                                      {(this.state.lang === "es" &&
+                                        this.state.opcion) ||
+                                        (this.state.lang === "ca" &&
+                                          this.state.opcio) ||
+                                        (this.state.lang === "en" &&
+                                          this.state.option)}
                                     </option>
                                     {this.state.adreces.map(function (
                                       tipus,
@@ -1474,438 +1146,19 @@ traduir(string) {
                                 </button>
                               </div>
                             </div>
-                          </form>
-                          <Modal
-                            show={this.state.show}
-                            onHide={() => this.setState({ show: false })}
-                          >
-                            <Modal.Body>
-                              <p className="mt-4 titolCart2">
-                                <Traduccio string="formulari.modal" />
-                              </p>
-                              <p className="titolCart2">
-                                {" "}
-                                <Traduccio string="formulari.importMin" />
-                                {this.state.importRepartiment}
-                              </p>
-                            </Modal.Body>
-                            <Modal.Footer>
-                              <button
-                                className="btn btn-outline-primary"
-                                onClick={() => this.setState({ show: false })}
-                              >
-                                <Traduccio string="formulari.tancar" />
-                              </button>
-                            </Modal.Footer>
-                          </Modal>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-sm-12 col-md-12 col-lg-4">
-                  <div className="container resum">
-                    <div className="container">
-                      <h5 className="titolCart2">
-                        <Traduccio string="formulari.pedido" />
-                      </h5>
-
-                      <div className="row mt-4">
-                        <table className="table">
-                          <thead>
-                            <tr>
-                              <th className="th">
-                                <Traduccio string="formulari.articles" />
-                              </th>
-                              <th className="th">
-                                <Traduccio string="formulari.unitats" />
-                              </th>
-                              <th className="th">
-                                <Traduccio string="formulari.preu" />
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {this.state.productes.map(function (
-                              articles,
-                              index
-                            ) {
-                              return (
-                                <LlistaPedido
-                                  key={articles["codi"]}
-                                  codi={articles["codi"]}
-                                  quant={articles["unitats"]}
-                                  id={articles["id"]}
-                                />
-                              );
-                            })}
-
-                            <tr>
-                              <th className="titolTotal">
-                                <Traduccio string="carrito.total" />
-                              </th>
-
-                              <th colSpan="2" className="preuTotal">
-                                {this.props.total} €
-                              </th>
-                            </tr>
-                          </tbody>
-                        </table>
-                        <a
-                          href="/carrito"
-                          className="btn btn-outline-primary ml-auto"
-                        >
-                          {" "}
-                          <Traduccio string="formulari.modPedido" />
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <Footer />
-          </div>
-        );
-      } else {
-        return (
-          <div>
-            <Header
-              canviarLlenguatge={this.props.canviarLlenguatge}
-              count={this.props.count}
-            />
-            <div className="container">
-              <div className="row">
-                <div className="col-md-12 col-lg-8">
-                  <div className="container">
-                    <div className="row">
-                      <div className="col-12">
-                        <div className="container cardsCart">
-                          <div className="accordion" id="accordionExample">
-                            <div className="card">
-                              <div className="card-header" id="headingOne">
-                                <h2 className="mb-0">
-                                  <a
-                                    className="btn btn-link btn-block titolCart2 linkAcordeon"
-                                    data-toggle="collapse"
-                                    data-target="#collapseOne"
-                                    aria-expanded="true"
-                                    aria-controls="collapseOne"
-                                    onClick={this.canviarIcon}
-                                  >
-                                    <Traduccio string="formulari.usuari" />{" "}
-                                    <span style={d}>
-                                      {" "}
-                                      <KeyboardArrowDownOutlinedIcon
-                                        style={arrowStyle}
-                                      />
-                                    </span>
-                                  </a>
-                                </h2>
-                              </div>
-
-                              <div
-                                id="collapseOne"
-                                className="collapse"
-                                aria-labelledby="headingOne"
-                                data-parent="#accordionExample"
-                              >
-                                <div className="card-body">
-                                  <div className="row">
-                                    <div className="col-md-6">
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.nom" />:{" "}
-                                        </strong>{" "}
-                                        {this.state.nomUsuari}
-                                      </p>
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.tipusDoc" />
-                                          :
-                                        </strong>{" "}
-                                        {this.state.document}
-                                      </p>
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.email" />
-                                          :
-                                        </strong>{" "}
-                                        {this.state.email}
-                                      </p>
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.telefono" />
-                                          :
-                                        </strong>{" "}
-                                        {this.state.telf}
-                                      </p>
-                                    </div>
-                                    <div className="col-md-6">
-                                      {" "}
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.paisNif" />
-                                          :
-                                        </strong>{" "}
-                                        {this.state.paisNif}
-                                      </p>
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.numDoc" />
-                                          :
-                                        </strong>{" "}
-                                        {this.state.numDocument}
-                                      </p>
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.emailFactura" />
-                                          :
-                                        </strong>{" "}
-                                        {this.state.emailFactura}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <button
-                                      className="btn btn-outline-primary mb-4"
-                                      style={d}
-                                      onClick={this.tornarDades}
-                                    >
-                                      {" "}
-                                      <Traduccio string="formulari.modDades" />
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="card">
-                              <div className="card-header" id="headingTwo">
-                                <h2 className="mb-0">
-                                  <a
-                                    className="btn btn-link btn-block titolCart2 linkAcordeon"
-                                    data-toggle="collapse"
-                                    data-target="#collapseTwo"
-                                    aria-expanded="true"
-                                    aria-controls="collapseTwo"
-                                    onClick={this.canviarIcon2}
-                                  >
-                                    <Traduccio string="formulari.envio" />{" "}
-                                    <span style={d}>
-                                      {" "}
-                                      <KeyboardArrowDownOutlinedIcon
-                                        style={arrowStyle2}
-                                      />
-                                    </span>
-                                  </a>
-                                </h2>
-                              </div>
-                              <div
-                                id="collapseTwo"
-                                className="collapse"
-                                aria-labelledby="headingTwo"
-                                data-parent="#accordionExample"
-                              >
-                                <div className="card-body">
-                                  <div className="row">
-                                    <div className="col-md-6">
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.pais" />:{" "}
-                                        </strong>{" "}
-                                        {this.state.pais2}
-                                      </p>
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.poblacio" />
-                                          :
-                                        </strong>{" "}
-                                        {this.state.poblacio2}
-                                      </p>
-
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.domicili" />
-                                          :
-                                        </strong>{" "}
-                                        {this.state.domicili}
-                                      </p>
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.pis" />:
-                                        </strong>{" "}
-                                        {this.state.pis}
-                                      </p>
-
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.porta" />
-                                          :
-                                        </strong>{" "}
-                                        {this.state.porta}
-                                      </p>
-                                    </div>
-                                    <div className="col-md-6">
-                                      {" "}
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.provincia" />
-                                          :
-                                        </strong>{" "}
-                                        {this.state.prov2}
-                                      </p>
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.via" />:
-                                        </strong>{" "}
-                                        {this.state.tipoVia}
-                                      </p>
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.numDom" />
-                                          :
-                                        </strong>{" "}
-                                        {this.state.num}
-                                      </p>
-                                      <p className="info">
-                                        <strong className="upper">
-                                          <Traduccio string="formulari.escala" />
-                                          :
-                                        </strong>{" "}
-                                        {this.state.escala}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <button
-                                      className="btn btn-outline-primary mb-4"
-                                      style={d}
-                                      onClick={this.tornarDades}
-                                    >
-                                      {" "}
-                                      <Traduccio string="formulari.modDades" />
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="card">
-                              <div className="card-header" id="headingThree">
-                                <h2 className="mb-0">
-                                  <a
-                                    className="btn btn-link btn-block titolCart2 linkAcordeon"
-                                    data-toggle="collapse"
-                                    data-target="#collapseThree"
-                                    aria-expanded="true"
-                                    aria-controls="collapseThree"
-                                    onClick={this.canviarIcon3}
-                                  >
-                                    <Traduccio string="formulari.pagament" />{" "}
-                                    <span style={d}>
-                                      {" "}
-                                      <KeyboardArrowDownOutlinedIcon
-                                        style={arrowStyle3}
-                                      />
-                                    </span>
-                                  </a>
-                                </h2>
-                              </div>
-                              <div
-                                id="collapseThree"
-                                className="collapse show"
-                                aria-labelledby="headingThree"
-                                data-parent="#accordionExample"
-                              >
-                                <div className="card-body">
-                                  <div className="mt-4">
-                                    <Pag
-                                      order={this.state.pedido}
-                                      amount={this.props.total}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-sm-12 col-md-12 col-lg-4">
-                  <div className="container resum">
-                    <div className="container">
-                      <h5 className="titolCart2">
-                        <Traduccio string="formulari.pedido" />
-                      </h5>
-
-                      <div className="row mt-4">
-                        <table className="table">
-                          <thead>
-                            <tr>
-                              <th className="th">
-                                <Traduccio string="formulari.articles" />
-                              </th>
-                              <th className="th">
-                                <Traduccio string="formulari.unitats" />
-                              </th>
-                              <th className="th">
-                                <Traduccio string="formulari.preu" />
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {this.state.productes.map(function (
-                              articles,
-                              index
-                            ) {
-                              return (
-                                <LlistaPedido
-                                  key={articles["codi"]}
-                                  codi={articles["codi"]}
-                                  quant={articles["unitats"]}
-                                  id={articles["id"]}
-                                />
-                              );
-                            })}
-                            <tr>
-                              <td className="titolsLlista">
-                                {this.state.descripcioGastos}
-                              </td>
-                              <td>1</td>
-                              <td>{this.state.importEnvio} €</td>
-                            </tr>
-                            <tr>
-                              <th className="titolTotal">
-                                <Traduccio string="carrito.total" />{" "}
-                              </th>
-
-                              <th colSpan="2" className="preuTotal">
-                                {this.props.total} €
-                              </th>
-                            </tr>
-                          </tbody>
-                        </table>
-                        <a
-                          href="/carrito"
-                          className="btn btn-outline-primary ml-auto"
-                        >
-                          {" "}
-                          <Traduccio string="formulari.modPedido" />
-                        </a>
-                      </div>
+                      </form>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <Footer />
           </div>
-        );
-      }
-    }
+        </div>
+      </div>
+    );
   }
 }
 
-export default withRouter(FormulariPedido);
+export default withRouter(FormulariRegistre);

@@ -9,7 +9,6 @@ import 'bootstrap/js/dist/dropdown.js';
 import 'bootstrap/js/dist/collapse.js';
 import 'popper.js/dist/popper.js';
 import MenuIcon from '@material-ui/icons/Menu';
-import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import Badge from '@material-ui/core/Badge';
 import ShoppingCartOutlinedIcon from '@material-ui/icons/ShoppingCartOutlined';
 import Traduccio from '../components/Traduccio';
@@ -46,8 +45,6 @@ function NouHeader(props) {
 
 
 
-
-
     if (Loginiciat) {
         return (<div >
             <nav className="navbar navbar-expand-md" >
@@ -67,16 +64,16 @@ function NouHeader(props) {
                                 <div className="dropdown-menu " aria-labelledby="dropdownMenuButton">
                                     <a className="dropdown-item" id="en" onClick={() => props.canviarLlenguatge("en") + setIdioma(en)}> <img src={en} width="30px" className="bandera mr-2" alt="en"/><Traduccio string="header.idioma.ingles"/></a>
                                     <a className="dropdown-item" id="ca" onClick={() => props.canviarLlenguatge("ca") + setIdioma(ca)}>  <img src={ca} width="30px" className="bandera mr-2" alt="ca"/><Traduccio string="header.idioma.catalan"/></a>
-                                    <a className="dropdown-item" id="ca" onClick={() => props.canviarLlenguatge("es") + setIdioma(es)}>  <img src={es} width="30px" className="bandera mr-2" alt="es"/><Traduccio string="header.idioma.español"/></a>
+                                    <a className="dropdown-item" id="es" onClick={() => props.canviarLlenguatge("es") + setIdioma(es)}>  <img src={es} width="30px" className="bandera mr-2" alt="es"/><Traduccio string="header.idioma.español"/></a>
 
                                 </div>
                             </div>
 
                         </li>
                         <li className="nav-item">
-                            <a href="/carrito" className="nav-link link mr-4">
+                            <a href="/carrito" className="nav-link mr-4 swing">
                                 <Badge badgeContent={props.count} color="error" showZero>
-                                    <ShoppingCartOutlinedIcon />
+                                    <ShoppingCartOutlinedIcon siza="Large"/>
                                 </Badge>
                             </a>
 
@@ -109,6 +106,7 @@ function NouHeader(props) {
                             <div className="dropdown-menu " aria-labelledby="dropdownMenuButton">
                                 <a className="dropdown-item" id="en" onClick={() => props.canviarLlenguatge("en") + setIdioma(en)}> <img src={en} width="20px" className="bandera mr-2" alt="en" />Anglès</a>
                                 <a className="dropdown-item" id="ca" onClick={() => props.canviarLlenguatge("ca") + setIdioma(ca)}>  <img src={ca} width="20px" className="bandera mr-2" alt="ca"/>Català</a>
+                                <a className="dropdown-item" id="es" onClick={() => props.canviarLlenguatge("es") + setIdioma(es)}>  <img src={es} width="30px" className="bandera mr-2" alt="es"/><Traduccio string="header.idioma.español"/></a>
 
                             </div>
                         </div>

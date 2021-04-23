@@ -91,10 +91,9 @@ class CardCarrito extends Component {
     async componentDidMount() {
 
         const lang = localStorage.getItem("idioma");
-
         
 
-        const resp = await axios.get(`https://aguilo.limit.es/api/ecomfront/articles/detail/${this.props.id}?lang=${lang}`, {
+        const resp = await axios.get(`${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articles/detail/${this.props.id}?lang=${lang}`, {
             headers: { "Authorization": `${localStorage.getItem("tokenType")} ${localStorage.getItem("resposta")}` }
         });
 
@@ -131,7 +130,7 @@ class CardCarrito extends Component {
                     <div className="row">
                         <div className="col-md-4 col-lg-3 col-xl-3">
                             <a href={"producte/" + this.props.codi}>
-                                <img src={"https://aguilo-botiga.limit.es/api/ecomfront/image/show/" + this.props.imatge} className="img-fluid imatgeCart" alt={this.props.desc} />
+                                <img src={process.env.REACT_APP_API_DOMAIN_IMAGE + "/" + this.props.imatge} className="img-fluid imatgeCart" alt={this.props.desc} />
                             </a>
                         </div>
 

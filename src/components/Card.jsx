@@ -30,7 +30,7 @@ class CardIndex extends Component {
           <header className="card_header">
             <img
               src={
-                "https://aguilo-botiga.limit.es/api/ecomfront/image/show/" +
+                process.env.REACT_APP_API_DOMAIN_IMAGE + "/" +
                 this.props.imatge
               }
               className="card-img-top h-100"

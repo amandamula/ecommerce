@@ -8,6 +8,7 @@ import "./css/Carrito.css";
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
 import { withRouter } from "react-router-dom";
 import Footer from "../components/Footer";
+import axios from 'axios';
 
 class Carrito extends Component {
   constructor(props) {
@@ -21,6 +22,23 @@ class Carrito extends Component {
 
   async componentDidMount() {
     const productes = JSON.parse(localStorage.getItem("productesCart"));
+
+    const r = await axios({
+      method: "post",
+      url: `${process.env.REACT_APP_API_DOMAIN}/api/auth/refresh`,
+      data: {
+        token: localStorage.getItem("token"),
+        session: { e: `${process.env.REACT_APP_EMPRESA_ID}`, i: `${process.env.REACT_APP_IDENTIFICADOR_ID}`},
+      },
+      headers: {
+        Authorization: `${localStorage.getItem(
+          "tokenType"
+        )} ${localStorage.getItem("token")}`,
+      },
+    });
+
+    const tokenRefresh = r.data;
+    localStorage.setItem("resposta", tokenRefresh.token);
 
     this.setState({ productes: productes , carregant : false });
   }

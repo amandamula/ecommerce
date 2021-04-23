@@ -11,16 +11,16 @@ class Pag extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        code : "htgkm94w",
-        terminal : "20588",
+        code : `${process.env.REACT_APP_MERCHANT_CODE}`,
+        terminal : `${process.env.REACT_APP_MERCHANT_TERMINAL}`,
         operation : "1",
-        password : "87cceca1d928fa8771c0077bdccdc9d7",
+        password : `${process.env.REACT_APP_MERCHANT_PASSWORD}`,
         signature : "",
         currency: "EUR",
         productDesc: "Pago",
         secure : "1",
-        urlOk : "http://localhost:3000/urlok",
-        urlKo : "http://localhost:3000/urlko",
+        urlOk : window.location.protocol +'//' + window.location.host + "/urlok",
+        urlKo : window.location.protocol +'//' + window.location.host + "/urlko",
         src : "" ,
 
 
@@ -37,7 +37,7 @@ class Pag extends Component {
 
     for(var x = 0 ; x < productes.length ; x++){
 
-      const resp = await axios.get(`https://aguilo.limit.es/api/ecomfront/articles/detail/${productes[x]["id"]}?lang=${lang}`, {
+      const resp = await axios.get(`${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articles/detail/${productes[x]["id"]}?lang=${lang}`, {
             headers: { "Authorization": `${localStorage.getItem("tokenType")} ${localStorage.getItem("resposta")}` }
         });
 
