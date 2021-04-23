@@ -21,6 +21,7 @@ class Pag extends Component {
         ca,
         es,
       },
+      carregant: true,
     };
 
     if (props.location.search === "") {
@@ -28,11 +29,18 @@ class Pag extends Component {
     }
   }
 
+  //Funció per traduir el correu de pagament.
+
   traduir(string) {
     const lang = localStorage.getItem("idioma");
 
     return this.state.idiomes[lang][string];
   }
+
+
+  /* POST de brestres i de caixes moviment, canviam l'estat del Pressupost a ACCEPTAT.
+  Feim un GET per tenir l'informació de les linies del pressupost i enviam 2 E-mails, 
+  un al comprador i l'altre al venedor.*/ 
 
   async componentDidMount() {
     const params = new URLSearchParams(this.props.location.search);
@@ -114,6 +122,9 @@ class Pag extends Component {
             },
           });
 
+
+          this.setState({ pagamentOK: true , carregant :false});
+
           const pressupostLinies = await axios.get(
             `${process.env.REACT_APP_API_DOMAIN}/api/ecom/pressupostosLinia?query=pressupost.codi==${pedido}&page=undefined&size=100`,
             {
@@ -127,7 +138,6 @@ class Pag extends Component {
 
           const linies = pressupostLinies.data._embedded.pressupostLinias;
 
-          this.setState({ pagamentOK: true });
 
           const headCorreuComprador = `<div class="container">
           <div class="row text-center">
@@ -433,17 +443,35 @@ class Pag extends Component {
             email: pressupost["emailFactura"],
           });
         } else {
-          window.location.href="/urlko";
-          this.setState({ pagamentOK: false });
+
+          this.setState({ pagamentOK: false, carregant :false });
         }
        
       
       }
     
     }
-    window.location.href="/urlko";
+    this.setState({ carregant :false });
+
   }
   render() {
+    if (this.state.carregant) {
+      return (
+        <div>
+          <Header
+            canviarLlenguatge={this.props.canviarLlenguatge}
+            count={this.props.count}
+          />
+          <div className="container margeCarregant">
+          <div className="text-center text-primary mt-5">
+            <div className="spinner-border" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+          </div>
+        </div>
+      );
+    }
     if (this.state.pagamentOK) {
       return (
         <div>

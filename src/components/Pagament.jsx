@@ -11,16 +11,16 @@ class Pag extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        code : "htgkm94w",
-        terminal : "20588",
+        code : `${process.env.REACT_APP_MERCHANT_CODE}`,
+        terminal : `${process.env.REACT_APP_MERCHANT_TERMINAL}`,
         operation : "1",
-        password : "87cceca1d928fa8771c0077bdccdc9d7",
+        password : `${process.env.REACT_APP_MERCHANT_PASSWORD}`,
         signature : "",
         currency: "EUR",
         productDesc: "Pago",
         secure : "1",
         urlOk : window.location.protocol +'//' + window.location.host + "/urlok",
-        urlKo : window.location.protocol +'//' + window.location.host + "http://localhost:3000/urlko",
+        urlKo : window.location.protocol +'//' + window.location.host + "/urlko",
         src : "" ,
 
 

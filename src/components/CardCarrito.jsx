@@ -91,7 +91,6 @@ class CardCarrito extends Component {
     async componentDidMount() {
 
         const lang = localStorage.getItem("idioma");
-
         
 
         const resp = await axios.get(`${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articles/detail/${this.props.id}?lang=${lang}`, {

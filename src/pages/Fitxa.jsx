@@ -50,7 +50,7 @@ class Fitxa extends Component {
       url: `${process.env.REACT_APP_API_DOMAIN}/api/auth/refresh`,
       data: {
         token: localStorage.getItem("token"),
-        session: { e: "645", i: "643" },
+        session: { e: `${process.env.REACT_APP_EMPRESA_ID}`, i: `${process.env.REACT_APP_IDENTIFICADOR_ID}`},
       },
       headers: {
         Authorization: `${localStorage.getItem(
@@ -66,7 +66,9 @@ class Fitxa extends Component {
       `${process.env.REACT_APP_API_DOMAIN}/api/ecom/articlesInformacio?query=article.codi==${this.state.codi}&page=0&size=100&lang=${lang}`,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("resposta")}`,
+          Authorization: `${localStorage.getItem(
+            "tokenType"
+          )} ${localStorage.getItem("resposta")}`,
         },
       }
     );
@@ -79,7 +81,9 @@ class Fitxa extends Component {
       `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articles/detail/${id}?lang=${lang}`,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("resposta")}`,
+          Authorization: `${localStorage.getItem(
+            "tokenType"
+          )} ${localStorage.getItem("resposta")}`,
         },
       }
     );

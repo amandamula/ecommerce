@@ -5,6 +5,11 @@
     "list.familias" : "FAMILIES",
     "list.productos" :  "ALL PRODUCTS",
     "index.titulo" : "Products La Luna",
+    "index.ordenarPreuAsc" : "Ascending price",
+    "index.ordenarPreuDesc" : "Descending price",
+    "index.ordenar" : "Sort by",
+    "index.ordenarAlfa" : "Alphabetically",
+    "index.ordenarFamilia": "Family",
     "card.informacion" : "More info",
     "fitxa.iva" : "VAT included",
     "fitxa.añadir" :  "Add to cart",
@@ -68,7 +73,9 @@
     "urlok.error" : "An error has occurred.",
     "urlko.error" : "Order pending payment",
     "urlko.problema" : "There has been an error in your order, contact our technical service, your order number is:",
-    "urlko.correu": "Technical support email:" 
+    "urlko.correu": "Technical support email:" ,
+      "correu.confirm": "Confirmation email"
+
 
 
 

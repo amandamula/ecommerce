@@ -5,6 +5,11 @@
     "list.familias" : "FAMILIAS",
     "list.productos" :  "TODOS LOS PRODUCTOS",
     "index.titulo" : "Productos La Luna",
+    "index.ordenarPreuAsc" : "Precio ascendente",
+    "index.ordenarPreuDesc" : "Precio descendente",
+    "index.ordenar" : "Ordenar por",
+    "index.ordenarAlfa" : "Alfabéticamente",
+    "index.ordenarFamilia": "Familia",
     "card.informacion" : "Ver información",
     "fitxa.iva" : "IVA incluido",
     "fitxa.añadir" :  "Añadir al carrito",
@@ -68,7 +73,8 @@
     "urlok.error" : "Se ha producido un error. El pago no se ha efectuado.",
     "urlko.error" : "Pedido pendiente de pago",
     "urlko.problema" : "Ha habido un error en su pedido, pongase en contacto con nuestro servicio técnico, su número de pedido es: ",
-    "urlko.correu": "Correo de soporte técnico: " 
+    "urlko.correu": "Correo de soporte técnico: " ,
+     "correu.confirm": "Correo de confirmación"
 
 
 

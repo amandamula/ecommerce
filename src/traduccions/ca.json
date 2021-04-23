@@ -5,6 +5,11 @@
     "list.familias" : "FAMILIES",
     "list.productos" :  "TOTS ELS PRODUCTES",
     "index.titulo" : "Productes La Luna",
+    "index.ordenarPreuAsc" : "Preu ascendent",
+    "index.ordenarPreuDesc" : "Preu descendent",
+    "index.ordenar" : "Ordenar per",
+    "index.ordenarAlfa" : "Alfabèticament",
+    "index.ordenarFamilia": "Familia", 
     "card.informacion" : "Més informació",
     "fitxa.iva" : "IVA inclòs",
     "fitxa.añadir" :  "Afegir a la cistella",
@@ -68,7 +73,9 @@
     "urlok.error" : "S'ha produit un error. El pagament no s'ha efectuat.",
     "urlko.error" : "Comanda pendent de pagament",
     "urlko.problema" : "Hi ha un problema amb la seva comanda, poseu-vos amb contacte amb el nostre servei tècnic, el nombre de la seva comanda és: ",
-    "urlko.correu": "Correu de suport tècnic:" 
+    "urlko.correu": "Correu de suport tècnic:",
+    "correu.confirm": "Correu de confirmació"
+
 
 
 
