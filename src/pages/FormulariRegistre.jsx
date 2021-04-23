@@ -56,6 +56,7 @@ class FormulariRegistre extends Component {
     return this.state.idiomes[lang][string];
   }
 
+//Carregar provincies.
   async handleChange(codi) {
     $("#prov").val("");
     this.setState({ altresPob: false, altresProv: false });
