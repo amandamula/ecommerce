@@ -44,6 +44,8 @@ class FormulariPedido extends Component {
         ca,
         es,
       },
+      importMinim: "",
+      afegirImport: false,
     };
 
     this.form = createRef();
@@ -61,7 +63,6 @@ class FormulariPedido extends Component {
     this.tornarDades = this.tornarDades.bind(this);
     this.traduir = this.traduir.bind(this);
 
-
     if (props != null) {
       if (props.match.params.pagament != null) {
         this.state.pagament = true;
@@ -69,13 +70,11 @@ class FormulariPedido extends Component {
     }
   }
 
- 
+  traduir(string) {
+    const lang = localStorage.getItem("idioma");
 
-traduir(string) {
-  const lang = localStorage.getItem("idioma");
-
-  return this.state.idiomes[lang][string];
-}
+    return this.state.idiomes[lang][string];
+  }
 
   // Carregam les provincies en funció del codi del pais.
   async handleChange(codi) {
@@ -171,7 +170,7 @@ traduir(string) {
     console.log(valor.target);
   }
 
-  // feim la validació de formulari i si és vàlid, feim el POST.
+  // feim la validació de formulari i si és vàlid, feim el SUBMIT.
 
   async submit(event) {
     event.preventDefault();
@@ -323,14 +322,14 @@ traduir(string) {
         var fallo = JSON.parse(error.request.responseText);
 
         console.log(fallo.errors);
-        if (fallo.errors[0].code === "DocumentIdentitat") {
+        if (fallo.errors[0].code == "DocumentIdentitat") {
           $("#numDocument").css("border", "1px solid red");
           $(".dni .invalid-feedback").css("display", "inherit");
         }
       }
 
       for (var i = 0; i < this.state.productes.length; i++) {
-        const linia = await axios({
+        await axios({
           method: "post",
           url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/pressupostosLinia`,
           data: {
@@ -383,7 +382,7 @@ traduir(string) {
 
         const gastos = gastosEnvio.data._embedded.articles[0];
 
-        const gastosEnvioLinea = await axios({
+        await axios({
           method: "post",
           url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/pressupostosLinia`,
           data: {
@@ -410,6 +409,7 @@ traduir(string) {
         });
 
         this.setState({
+          afegirImport: true,
           importEnvio: costRepartiment.toFixed(2),
           descripcioGastos: gastos.descripcio,
         });
@@ -417,6 +417,7 @@ traduir(string) {
 
       this.setState({ pagament: true });
     }
+    this.setState({ importMinim: importMinim.toFixed(2) });
   }
 
   //Miram quin és l'import mínim per envio gratis, primer en funcio al C.P, després provincia i finalent Pais.
@@ -435,22 +436,22 @@ traduir(string) {
     }
 
     if (this.state.provincies !== null) {
-      for (var i = 0; i < this.state.provincies.length; i++) {
-        if (this.state.provincies[i]["id"] === this.state.prov) {
+      for (var x = 0; x < this.state.provincies.length; x++) {
+        if (this.state.provincies[x]["id"] === this.state.prov) {
           if (
-            this.state.provincies[i]["importCompraNoPreuRepartiment"] !==
+            this.state.provincies[x]["importCompraNoPreuRepartiment"] !==
             undefined
           ) {
-            return this.state.provincies[i]["importCompraNoPreuRepartiment"];
+            return this.state.provincies[x]["importCompraNoPreuRepartiment"];
           }
         }
       }
     }
 
     if (this.state.paisos !== null) {
-      for (var i = 0; i < this.state.paisos.length; i++) {
-        if (this.state.paisos[i]["id"] === this.state.pais) {
-          return this.state.paisos[i]["importCompraNoPreuRepartiment"];
+      for (var y = 0; y < this.state.paisos.length; y++) {
+        if (this.state.paisos[y]["id"] === this.state.pais) {
+          return this.state.paisos[y]["importCompraNoPreuRepartiment"];
         }
       }
     }
@@ -461,33 +462,33 @@ traduir(string) {
   //mirar l'import minim per realitzar l'envio.
   importEnvioMinim() {
     if (this.state.poblacions !== null) {
-      for (var i = 0; i < this.state.poblacions.length; i++) {
-        if (this.state.poblacions[i]["id"] === this.state.poblacio) {
+      for (var a = 0; a < this.state.poblacions.length; a++) {
+        if (this.state.poblacions[a]["id"] === this.state.poblacio) {
           if (
-            this.state.poblacions[i]["importMinimRepartiment"] !== undefined
+            this.state.poblacions[a]["importMinimRepartiment"] !== undefined
           ) {
-            return this.state.poblacions[i]["importMinimRepartiment"];
+            return this.state.poblacions[a]["importMinimRepartiment"];
           }
         }
       }
     }
 
     if (this.state.provincies !== null) {
-      for (var i = 0; i < this.state.provincies.length; i++) {
-        if (this.state.provincies[i]["id"] === this.state.prov) {
+      for (var b = 0; b < this.state.provincies.length; b++) {
+        if (this.state.provincies[b]["id"] === this.state.prov) {
           if (
-            this.state.provincies[i]["importMinimRepartiment"] !== undefined
+            this.state.provincies[b]["importMinimRepartiment"] !== undefined
           ) {
-            return this.state.provincies[i]["importMinimRepartiment"];
+            return this.state.provincies[b]["importMinimRepartiment"];
           }
         }
       }
     }
 
     if (this.state.paisos !== null) {
-      for (var i = 0; i < this.state.paisos.length; i++) {
-        if (this.state.paisos[i]["id"] === this.state.pais) {
-          return this.state.paisos[i]["importMinimRepartiment"];
+      for (var c = 0; c < this.state.paisos.length; c++) {
+        if (this.state.paisos[c]["id"] === this.state.pais) {
+          return this.state.paisos[c]["importMinimRepartiment"];
         }
       }
     }
@@ -508,19 +509,19 @@ traduir(string) {
     }
 
     if (this.state.provincies !== null) {
-      for (var i = 0; i < this.state.provincies.length; i++) {
-        if (this.state.provincies[i]["id"] === this.state.prov) {
-          if (this.state.provincies[i]["importRepartiment"] !== undefined) {
-            return this.state.provincies[i]["importRepartiment"];
+      for (var x = 0; x < this.state.provincies.length; x++) {
+        if (this.state.provincies[x]["id"] === this.state.prov) {
+          if (this.state.provincies[x]["importRepartiment"] !== undefined) {
+            return this.state.provincies[x]["importRepartiment"];
           }
         }
       }
     }
 
     if (this.state.paisos !== null) {
-      for (var i = 0; i < this.state.paisos.length; i++) {
-        if (this.state.paisos[i]["id"] === this.state.pais) {
-          return this.state.paisos[i]["importRepartiment"];
+      for (var y = 0; y < this.state.paisos.length; y++) {
+        if (this.state.paisos[y]["id"] === this.state.pais) {
+          return this.state.paisos[y]["importRepartiment"];
         }
       }
     }
@@ -541,7 +542,10 @@ traduir(string) {
         url: `${process.env.REACT_APP_API_DOMAIN}/api/auth/refresh`,
         data: {
           token: localStorage.getItem("token"),
-          session: { e: "645", i: "643" },
+          session: {
+            e: `${process.env.REACT_APP_EMPRESA_ID}`,
+            i: `${process.env.REACT_APP_IDENTIFICADOR_ID}`,
+          },
         },
         headers: {
           Authorization: `${localStorage.getItem(
@@ -657,6 +661,8 @@ traduir(string) {
           <Header
             canviarLlenguatge={this.props.canviarLlenguatge}
             count={this.props.count}
+            total={this.props.total}
+            productes={this.props.productes}
           />
           <div className="container cardsCart">
             <h6 className="titolCartBuid">
@@ -677,6 +683,8 @@ traduir(string) {
             <Header
               canviarLlenguatge={this.props.canviarLlenguatge}
               count={this.props.count}
+              total={this.props.total}
+              productes={this.props.productes}
             />
             <div className="container">
               <div className="row">
@@ -778,7 +786,7 @@ traduir(string) {
                                     }
                                   >
                                     <option selected disabled value="">
-                                    {this.traduir("formulari.opcio")}
+                                      {this.traduir("formulari.opcio")}
                                     </option>
                                     {this.state.paisosNif.map(function (
                                       pais,
@@ -825,7 +833,7 @@ traduir(string) {
                                     }
                                   >
                                     <option selected disabled value="">
-                                    {this.traduir("formulari.opcio")}
+                                      {this.traduir("formulari.opcio")}
                                     </option>
                                     <option value="NIF">NIF</option>
                                     <option value="NIF_operador">
@@ -839,7 +847,7 @@ traduir(string) {
                                       CERTIFICAT RESIDENCIA FISCAL
                                     </option>
                                     <option value="altres">
-                                    {this.traduir("formulari.altres")}
+                                      {this.traduir("formulari.altres")}
                                     </option>
                                   </select>
                                   <div className="invalid-feedback">
@@ -976,7 +984,7 @@ traduir(string) {
                                     required
                                   >
                                     <option selected disabled value="">
-                                    {this.traduir("formulari.opcio")}
+                                      {this.traduir("formulari.opcio")}
                                     </option>
                                     {this.state.paisos.map(function (
                                       paisos,
@@ -1032,7 +1040,7 @@ traduir(string) {
                                     required
                                   >
                                     <option selected disabled value="">
-                                    {this.traduir("formulari.opcio")}
+                                      {this.traduir("formulari.opcio")}
                                     </option>
 
                                     {this.state.provincies.length > 0 &&
@@ -1057,7 +1065,7 @@ traduir(string) {
                                       })}
 
                                     <option value={"altres&altres&altres"}>
-                                    {this.traduir("formulari.altres")}
+                                      {this.traduir("formulari.altres")}
                                     </option>
                                   </select>
                                   <div className="invalid-feedback">
@@ -1100,7 +1108,7 @@ traduir(string) {
                                       required
                                     >
                                       <option selected disabled value="">
-                                      {this.traduir("formulari.opcio")}
+                                        {this.traduir("formulari.opcio")}
                                       </option>
 
                                       {this.state.poblacions.length > 0 &&
@@ -1123,7 +1131,7 @@ traduir(string) {
                                         })}
 
                                       <option value={"altres&altres"}>
-                                      {this.traduir("formulari.altres")}
+                                        {this.traduir("formulari.altres")}
                                       </option>
                                     </select>
                                     <div className="invalid-feedback">
@@ -1323,7 +1331,7 @@ traduir(string) {
                                     }
                                   >
                                     <option selected disabled value="">
-                                    {this.traduir("formulari.opcio")}
+                                      {this.traduir("formulari.opcio")}
                                     </option>
                                     {this.state.adreces.map(function (
                                       tipus,
@@ -1486,7 +1494,7 @@ traduir(string) {
                               <p className="titolCart2">
                                 {" "}
                                 <Traduccio string="formulari.importMin" />
-                                {this.state.importRepartiment}
+                                {this.state.importMinim} €
                               </p>
                             </Modal.Body>
                             <Modal.Footer>
@@ -1869,13 +1877,16 @@ traduir(string) {
                                 />
                               );
                             })}
-                            <tr>
-                              <td className="titolsLlista">
-                                {this.state.descripcioGastos}
-                              </td>
-                              <td>1</td>
-                              <td>{this.state.importEnvio} €</td>
-                            </tr>
+
+                            {this.state.afegirImport && (
+                              <tr>
+                                <td className="titolsLlista">
+                                  {this.state.descripcioGastos}
+                                </td>
+                                <td>1</td>
+                                <td>{this.state.importEnvio} €</td>
+                              </tr>
+                            )}
                             <tr>
                               <th className="titolTotal">
                                 <Traduccio string="carrito.total" />{" "}

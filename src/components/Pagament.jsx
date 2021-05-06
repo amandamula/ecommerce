@@ -43,7 +43,7 @@ class Pag extends Component {
 
        const articles = resp.data;
 
-       const preuUnitat = (articles.preuAmbIva * productes[x]["unitats"]);
+       const preuUnitat = (articles.preuAmbIva.toFixed(2) * productes[x]["unitats"]);
         preuTotal = preuTotal + preuUnitat;
 
     }

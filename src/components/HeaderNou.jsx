@@ -12,6 +12,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Badge from '@material-ui/core/Badge';
 import ShoppingCartOutlinedIcon from '@material-ui/icons/ShoppingCartOutlined';
 import Traduccio from '../components/Traduccio';
+import ResumCarrito from '../components/ResumCarrito';
+import $ from 'jquery';
 
 const Img = () => {
 
@@ -71,7 +73,7 @@ function NouHeader(props) {
 
                         </li>
                         <li className="nav-item">
-                            <a href="/carrito" className="nav-link mr-4 swing">
+                            <a href="#" className="nav-link mr-4 swing" onClick={() => $("#mySidenav").css("width", "350px")}>
                                 <Badge badgeContent={props.count} color="error" showZero>
                                     <ShoppingCartOutlinedIcon siza="Large"/>
                                 </Badge>
@@ -80,14 +82,11 @@ function NouHeader(props) {
 
                         </li>
 
-
-
-
-
-
                     </ul>
                 </div>
             </nav>
+            <ResumCarrito count={props.count} total={props.total} productes={props.productes}/>
+            
         </div>);
     }
     return (<div >
@@ -101,7 +100,7 @@ function NouHeader(props) {
                     <li className="nav-item">
                         <div className="dropdown">
                             <button className="btn dropdown-toggle btn-outline-primary mr-3 text-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img src={idioma} width="20px" className="bandera" />
+                                <img src={idioma} width="20px" className="bandera" alt="bandera"/>
                             </button>
                             <div className="dropdown-menu " aria-labelledby="dropdownMenuButton">
                                 <a className="dropdown-item" id="en" onClick={() => props.canviarLlenguatge("en") + setIdioma(en)}> <img src={en} width="20px" className="bandera mr-2" alt="en" />Anglès</a>

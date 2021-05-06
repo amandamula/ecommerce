@@ -10,9 +10,13 @@
     "index.ordenar" : "Sort by",
     "index.ordenarAlfa" : "Alphabetically",
     "index.ordenarFamilia": "Family",
+    "index.noCoinci" : "No matches",
+    "index.veureTot": "See all articles",
     "card.informacion" : "More info",
     "fitxa.iva" : "VAT included",
     "fitxa.añadir" :  "Add to cart",
+    "fitxa.relacionats" : "RELATED PRODUCTS",
+    "carrito.anar": "Go to cart",
     "carrito.carrito" : "CART",
     "carrito.quant" : "Quantity",
     "carrito.eliminar" : "Remove",
@@ -23,6 +27,7 @@
     "carrito.comprar": "Place order",
     "carrito.cistellaBuida" : "The cart is empty",
     "carrito.veureArt" : "View articles",
+    "carrito.unitats" : "Units",
     "formulari.usuari": "User data",
     "formulari.envio": "Shipping address",
     "formulari.nom" : "Name",
@@ -56,7 +61,7 @@
     "formulari.opcio": "Choose an option",
     "formulari.altres": "Other",
     "formulari.modal": "The total amount is not enough",
-    "formulari.importMin": "The minimum amount is :",
+    "formulari.importMin": "The minimum amount is: ",
     "formulari.tancar": "Close",
     "formulari.modDades": "Modify information",
     "formulari.pagament" : "Payment",
@@ -74,7 +79,12 @@
     "urlko.error" : "Order pending payment",
     "urlko.problema" : "There has been an error in your order, contact our technical service, your order number is:",
     "urlko.correu": "Technical support email:" ,
-      "correu.confirm": "Confirmation email"
+    "correu.confirm": "Confirmation email",
+    "correu.benv" : "Welcome to Embutits Aguiló", 
+    "correu.confirmarCompte" : "Confirm Account", 
+    "correu.correcte" : ", the sign up was successful with the email: ",
+    "registre.ok": "Registered successfully.",
+    "registre.compr": " You will receive a confirmation email at: "
 
 
 

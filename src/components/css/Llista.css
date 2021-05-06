@@ -13,10 +13,14 @@
     text-align: start;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-top: 80px;
+  
     
 
 
+}
+
+.llistes:first-child{
+    margin-top: 85px;
 }
 
 .linkLlista{

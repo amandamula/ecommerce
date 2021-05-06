@@ -10,6 +10,8 @@ import Breadcrumb from "react-bootstrap/Breadcrumb";
 import Traduccio from "../components/Traduccio";
 import { Helmet } from "react-helmet";
 import Footer from "../components/Footer";
+import noFoto from "../imatges/no_foto.png";
+import CarosuelCards from '../components/CarouselCards';
 
 class Fitxa extends Component {
   constructor(props) {
@@ -50,7 +52,10 @@ class Fitxa extends Component {
       url: `${process.env.REACT_APP_API_DOMAIN}/api/auth/refresh`,
       data: {
         token: localStorage.getItem("token"),
-        session: { e: `${process.env.REACT_APP_EMPRESA_ID}`, i: `${process.env.REACT_APP_IDENTIFICADOR_ID}`},
+        session: {
+          e: `${process.env.REACT_APP_EMPRESA_ID}`,
+          i: `${process.env.REACT_APP_IDENTIFICADOR_ID}`,
+        },
       },
       headers: {
         Authorization: `${localStorage.getItem(
@@ -91,6 +96,7 @@ class Fitxa extends Component {
     const infoProd = resp.data;
 
     const preu = infoProd.preuAmbIva.toFixed(2);
+    
 
     this.setState({
       info: info._embedded.articleInformacios,
@@ -103,12 +109,15 @@ class Fitxa extends Component {
   }
 
   render() {
+    const that = this;
     if (this.state.carregant) {
       return (
         <div>
           <Header
             canviarLlenguatge={this.props.canviarLlenguatge}
             count={this.props.count}
+            total={this.props.total}
+            productes={this.props.productes}
           />
           <Helmet>
             <title> Embutidos La Luna Sóller</title>
@@ -128,6 +137,8 @@ class Fitxa extends Component {
           <Header
             canviarLlenguatge={this.props.canviarLlenguatge}
             count={this.props.count}
+            total={this.props.total}
+            productes={this.props.productes}
           />
           <Helmet>
             <title>
@@ -138,23 +149,32 @@ class Fitxa extends Component {
           <div className="container fitxa">
             <div className="row">
               <div className="col-md-5">
-                <div className="carousel-wrapper">
-                  <Carousel showStatus={false} showIndicators={false}>
-                    {this.state.info.map(function (articles) {
-                      return (
-                        <div key={articles.rutaInforme}>
-                          <img
-                            src={
-                              process.env.REACT_APP_API_DOMAIN_IMAGE + "/" +
-                              articles.rutaInforme
-                            }
-                            alt={articles.descripcio}
-                          />
-                        </div>
-                      );
-                    })}
-                  </Carousel>
-                </div>
+                {this.state.info.length === 0 ? (
+                  <div className="carousel-wrapper">
+                    <Carousel showStatus={false} showIndicators={false}>
+                      <img src={noFoto} alt="Foto no disponible" />
+                    </Carousel>
+                  </div>
+                ) : (
+                  <div className="carousel-wrapper">
+                    <Carousel showStatus={false} showIndicators={false}>
+                      {this.state.info.map(function (articles) {
+                        return (
+                          <div key={articles.rutaInforme}>
+                            <img
+                              src={
+                                process.env.REACT_APP_API_DOMAIN_IMAGE +
+                                "/" +
+                                articles.rutaInforme
+                              }
+                              alt={articles.descripcio}
+                            />
+                          </div>
+                        );
+                      })}
+                    </Carousel>
+                  </div>
+                )}
               </div>
               <div className="col-md-7">
                 <div className="container">
@@ -206,9 +226,8 @@ class Fitxa extends Component {
                             }
                           />
                         </div>
-                        <div className="col-sm-10 col-md-4 col-lg-5 mb-1">
+                        <div className="col-9 col-sm-10 col-md-4 col-lg-5 mb-1">
                           <a
-                            href="/carrito"
                             className="btn btn-primary col"
                             onClick={() =>
                               this.props.afegirCistella(
@@ -243,6 +262,9 @@ class Fitxa extends Component {
                 </div>
               </div>
             </div>
+            <h6 className="titolFitxa prodRelacionats"><Traduccio string="fitxa.relacionats"/></h6>
+            <CarosuelCards codiFam={this.state.codiFam} codi={this.state.codi} afegirCistella={that.props.afegirCistella}/>
+             
           </div>
           <Footer />
         </div>

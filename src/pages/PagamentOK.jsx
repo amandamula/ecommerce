@@ -53,7 +53,7 @@ class Pag extends Component {
     if (pressupost !== null) {
       if (pressupost["estat"] === "PENDENT") {
         if (pressupost["codi"] == pedido) {
-          const bestretes = await axios({
+          /*await axios({
             method: "post",
             url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/bestretes`,
             data: {
@@ -72,7 +72,8 @@ class Pag extends Component {
             },
           });
 
-          const CaixaMoviment = await axios({
+        
+          await axios({
             method: "post",
             url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/caixesMoviment`,
             data: {
@@ -104,14 +105,14 @@ class Pag extends Component {
                 "tokenType"
               )} ${localStorage.getItem("resposta")}`,
             },
-          });
+          });*/
 
           const obj = JSON.parse(sessionStorage.getItem("pressupost"));
           obj.estat = "ACCEPTAT";
 
           const idPressupost = pressupost["id"];
 
-          const p = await axios({
+          await axios({
             method: "put",
             url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/pressupostos/${idPressupost}`,
             data: obj,
@@ -123,7 +124,7 @@ class Pag extends Component {
           });
 
 
-          this.setState({ pagamentOK: true , carregant :false});
+          this.setState({ pagamentOK: true });
 
           const pressupostLinies = await axios.get(
             `${process.env.REACT_APP_API_DOMAIN}/api/ecom/pressupostosLinia?query=pressupost.codi==${pedido}&page=undefined&size=100`,
@@ -393,7 +394,7 @@ class Pag extends Component {
               2
             )} €</h2></td></tr></tbody></table>`;
 
-          const correuClient = await axios({
+          await axios({
             method: "post",
             url: `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/sendEmail/send`,
             data: {
@@ -414,7 +415,7 @@ class Pag extends Component {
             },
           });
 
-          const correuVenedor = await axios({
+          await axios({
             method: "post",
             url: `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/sendEmail/send`,
             data: {

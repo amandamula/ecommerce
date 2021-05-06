@@ -1,8 +1,10 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
 import Traduccio from "../components/Traduccio";
 import "./css/Card.css";
-import DoneOutlineOutlinedIcon from '@material-ui/icons/DoneOutlineOutlined';
+import DoneOutlineOutlinedIcon from "@material-ui/icons/DoneOutlineOutlined";
+import noFoto from "../imatges/no_foto.png";
 
 class CardIndex extends Component {
   constructor(props) {
@@ -18,9 +20,9 @@ class CardIndex extends Component {
     this.setState({ preu: preu });
   }
 
-  canviarIcon(){
-    this.setState({comprat : true});
-    setTimeout(()=> this.setState({comprat : false}),500)
+  canviarIcon() {
+    this.setState({ comprat: true });
+    setTimeout(() => this.setState({ comprat: false }), 500);
   }
 
   render() {
@@ -28,26 +30,37 @@ class CardIndex extends Component {
       <div>
         <div className="card cards">
           <header className="card_header">
-            <img
-              src={
-                process.env.REACT_APP_API_DOMAIN_IMAGE + "/" +
-                this.props.imatge
-              }
-              className="card-img-top h-100"
-              alt={this.props.desc}
-            />
+            <Link to={"/producte/" + this.props.id}>
+              {this.props.imatge === undefined ? (
+                <img
+                  src={noFoto}
+                  className="card-img-top h-100"
+                  alt={this.props.desc}
+                />
+              ) : (
+                <img
+                  src={
+                    process.env.REACT_APP_API_DOMAIN_IMAGE +
+                    "/" +
+                    this.props.imatge
+                  }
+                  className="card-img-top h-100"
+                  alt={this.props.desc}
+                />
+              )}
+            </Link>
           </header>
           <div className="card-body">
             <h6 className="card-title titol text-primary">{this.props.desc}</h6>
             <div className="card-subtitle text-muted preu">
-              <p>{this.state.preu}€</p>
+              {this.state.preu}€{" "}
             </div>
 
             <div className="card__description">
               <div className="row">
                 <div className="col-9">
                   <a
-                    href={"/producte/" + this.props.codi}
+                    href={"/producte/" + this.props.codi}//thisprops.id
                     className="btn btn-outline-primary"
                   >
                     <Traduccio string="card.informacion" />
@@ -75,8 +88,11 @@ class CardIndex extends Component {
                       ) + this.canviarIcon(this.props.codi)
                     }
                   >
-                    {this.state.comprat ? <DoneOutlineOutlinedIcon/> : <AddShoppingCartIcon />}
-                 
+                    {this.state.comprat ? (
+                      <DoneOutlineOutlinedIcon />
+                    ) : (
+                      <AddShoppingCartIcon />
+                    )}
                   </a>
                 </div>
               </div>

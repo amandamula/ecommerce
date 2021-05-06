@@ -10,9 +10,13 @@
     "index.ordenar" : "Ordenar per",
     "index.ordenarAlfa" : "Alfabèticament",
     "index.ordenarFamilia": "Familia", 
+    "index.noCoinci" : "No hi ha coincidències",
+    "index.veureTot": "Veure tots els articles",
     "card.informacion" : "Més informació",
     "fitxa.iva" : "IVA inclòs",
     "fitxa.añadir" :  "Afegir a la cistella",
+    "fitxa.relacionats" : "PRODUCTES RELACIONATS",
+    "carrito.anar": "Anar a la cistella",
     "carrito.carrito" : "CISTELLA",
     "carrito.quant" : "Quantitat",
     "carrito.eliminar" : "Eliminar",
@@ -23,6 +27,7 @@
     "carrito.comprar": "Realitzar compra",
     "carrito.cistellaBuida" : "La teva cistella està buida",
     "carrito.veureArt" : "Veure Articles",
+    "carrito.unitats" : "Unitats",
     "formulari.usuari": "Dades de l'usuari",
     "formulari.envio": "Direcció d'enviament",
     "formulari.nom" : "Nom complet",
@@ -56,7 +61,7 @@
     "formulari.opcio": "Tria una opció",
     "formulari.altres": "Altres",
     "formulari.modal": "L'import total no és suficient",
-    "formulari.importMin": "L'import mínim és :",
+    "formulari.importMin": "L'import mínim és: ",
     "formulari.tancar": "Tancar",
     "formulari.modDades" : "Modificar Dades",
     "formulari.pagament" : "Pagament",
@@ -74,7 +79,13 @@
     "urlko.error" : "Comanda pendent de pagament",
     "urlko.problema" : "Hi ha un problema amb la seva comanda, poseu-vos amb contacte amb el nostre servei tècnic, el nombre de la seva comanda és: ",
     "urlko.correu": "Correu de suport tècnic:",
-    "correu.confirm": "Correu de confirmació"
+    "correu.confirm": "Correu de confirmació",
+    "correu.benv" : "Benvingut a Embutits Aguiló", 
+    "correu.confirmarCompte" : "Confirmar compte", 
+    "correu.correcte" : ", el registre s'ha realitzat correctament amb l'email : ",
+    "registre.ok": "S'ha registrat correctament.",
+    "registre.compr": "Rebrà un correu de confirmació a: "
+
 
 
 

@@ -10,9 +10,13 @@
     "index.ordenar" : "Ordenar por",
     "index.ordenarAlfa" : "Alfabéticamente",
     "index.ordenarFamilia": "Familia",
+    "index.noCoinci" : "No hay coincidencias",
+    "index.veureTot": "Ver todos los artículos",
     "card.informacion" : "Ver información",
     "fitxa.iva" : "IVA incluido",
     "fitxa.añadir" :  "Añadir al carrito",
+    "fitxa.relacionats" : "PRODUCTOS RELACIONADOS",
+    "carrito.anar": "Ir al carrito",
     "carrito.carrito" : "CARRITO",
     "carrito.quant" : "Cantidad",
     "carrito.eliminar" : "Eliminar",
@@ -23,6 +27,7 @@
     "carrito.comprar": "Realizar compra",
     "carrito.cistellaBuida" : "La cesta está vacía",
     "carrito.veureArt" : "Ver Artículos",
+    "carrito.unitats" : "Unidades",
     "formulari.usuari": "Datos del usuario",
     "formulari.envio": "Dirección d'envio",
     "formulari.nom" : "Nombre completo",
@@ -56,7 +61,7 @@
     "formulari.opcio": "Elige una opción",
     "formulari.altres": "Otras",
     "formulari.modal": "El importe total no es suficiente",
-    "formulari.importMin": "El importe mínimo es :",
+    "formulari.importMin": "El importe mínimo es: ",
     "formulari.tancar": "Cerrar",
     "formulari.modDades" : "Modificar Datos",
     "formulari.pagament" : "Pago",
@@ -74,7 +79,12 @@
     "urlko.error" : "Pedido pendiente de pago",
     "urlko.problema" : "Ha habido un error en su pedido, pongase en contacto con nuestro servicio técnico, su número de pedido es: ",
     "urlko.correu": "Correo de soporte técnico: " ,
-     "correu.confirm": "Correo de confirmación"
+    "correu.confirm": "Correo de confirmación",
+    "correu.benv" : "Bienvenido a Embutidos Aguiló", 
+    "correu.confirmarCompte" : "Confirmar Cuenta", 
+    "correu.correcte": ", el registro se ha realizado correctamente con el email: ",
+    "registre.ok": "Se ha registrado correctamente. ",
+    "registre.compr": "Recibirá un correo de confirmación a: "
 
 
 

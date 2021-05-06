@@ -9,7 +9,7 @@ class Spinner extends Component {
     return (
       <div>
         <div className="container margeCarregant">
-            <div className="text-center text-primary mt-5">
+            <div className="text-center text-primary">
               <div className="spinner-border" role="status">
                 <span className="sr-only">Loading...</span>
               </div>

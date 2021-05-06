@@ -70,3 +70,8 @@
 .carousel .thumb.selected, .carousel .thumb:hover {
     border: 3px solid #790726 !important ;
 }
+
+.prodRelacionats{
+
+    margin-top: 50px;
+}

@@ -8,7 +8,11 @@ import "./css/Carrito.css";
 import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
 import { withRouter } from "react-router-dom";
 import Footer from "../components/Footer";
-import axios from 'axios';
+import axios from "axios";
+import { animateScroll as scroll } from "react-scroll";
+import KeyboardArrowUpOutlinedIcon from "@material-ui/icons/KeyboardArrowUpOutlined";
+
+
 
 class Carrito extends Component {
   constructor(props) {
@@ -16,8 +20,13 @@ class Carrito extends Component {
     this.state = {
       productes: [],
       total: 0,
-      carregant :  true
+      carregant: true,
     };
+    this.scrollToTop = this.scrollToTop.bind(this);
+  }
+
+  scrollToTop() {
+    scroll.scrollToTop();
   }
 
   async componentDidMount() {
@@ -28,7 +37,10 @@ class Carrito extends Component {
       url: `${process.env.REACT_APP_API_DOMAIN}/api/auth/refresh`,
       data: {
         token: localStorage.getItem("token"),
-        session: { e: `${process.env.REACT_APP_EMPRESA_ID}`, i: `${process.env.REACT_APP_IDENTIFICADOR_ID}`},
+        session: {
+          e: `${process.env.REACT_APP_EMPRESA_ID}`,
+          i: `${process.env.REACT_APP_IDENTIFICADOR_ID}`,
+        },
       },
       headers: {
         Authorization: `${localStorage.getItem(
@@ -40,7 +52,7 @@ class Carrito extends Component {
     const tokenRefresh = r.data;
     localStorage.setItem("resposta", tokenRefresh.token);
 
-    this.setState({ productes: productes , carregant : false });
+    this.setState({ productes: productes, carregant: false });
   }
 
   render() {
@@ -51,14 +63,16 @@ class Carrito extends Component {
           <Header
             canviarLlenguatge={this.props.canviarLlenguatge}
             count={this.props.count}
+            total={this.props.total}
+            productes={this.props.productes}
           />
-      
+
           <div className="container margeCarregant">
-          <div className="text-center text-primary mt-5">
-            <div className="spinner-border" role="status">
-              <span className="sr-only">Loading...</span>
+            <div className="text-center text-primary mt-5">
+              <div className="spinner-border" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
             </div>
-          </div>
           </div>
         </div>
       );
@@ -70,6 +84,8 @@ class Carrito extends Component {
           <Header
             canviarLlenguatge={this.props.canviarLlenguatge}
             count={this.props.count}
+            total={this.props.total}
+            productes={this.props.productes}
           />
           <div className="container">
             <div className="row">
@@ -141,6 +157,17 @@ class Carrito extends Component {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div className="row mt-4">
+              <div className="ml-auto">
+                <a
+                  className="btn btn-primary text-center"
+                  onClick={this.scrollToTop}
+                >
+                  {" "}
+                  <KeyboardArrowUpOutlinedIcon />
+                </a>
               </div>
             </div>
           </div>

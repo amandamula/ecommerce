@@ -1,0 +1,129 @@
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1500;
+  top: 0;
+  right: 0;
+  background-color: white;
+  overflow-x: hidden;
+  /*transition: 0.5s;*/
+  padding-top: 10px;
+  box-shadow: 0 5px 15px -3px rgb(0 0 0 / 23%);
+  /* transform: translateY(0); */
+  opacity: 1;
+  transition: width 0.4s linear;
+  /* max-width: 320px; */
+}
+.submenu {
+  overflow: hidden;
+  width: 350px;
+}
+.llistaResum {
+  list-style: none;
+  padding: 0;
+  overflow-y: auto;
+  max-height: calc(100vh - 220px) !important;
+  overflow-x: hidden;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.cardResum {
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+}
+
+.nomProducte {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.bordes {
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 20px;
+}
+.unitats {
+  text-align: start !important;
+
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+  color: #737373;
+}
+
+.infoResum {
+  text-align: start;
+  padding: 11px;
+}
+
+.imgResum {
+  margin-top: 20%;
+}
+
+.totalResum {
+  padding: 8px 8px 16px 25px !important;
+}
+
+.tot {
+  font-size: 1.3rem;
+
+  text-align: start !important;
+}
+
+.num {
+  letter-spacing: 1px;
+  text-align: end !important;
+  font-size: 1.4rem;
+  padding-right: 20px;
+}
+
+.numUnitats {
+  text-align: end !important;
+
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+  color: #737373;
+  padding-right: 20px;
+}
+.sidenav p {
+  padding-top: 15px;
+  text-decoration: none;
+
+  color: black;
+  display: block;
+}
+
+.sidenav .closebtn {
+  /* position: absolute; */
+  /* top: 0; */
+  font-size: 1.3rem;
+}
+
+.cart-side-header {
+  height: 40px;
+  padding: 0 25px;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #dee2e6;
+font-size:18px;
+}
+
+.margeTitol{
+  margin-top: 150px;
+  margin-bottom: 150px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+  .sidenav a {
+    font-size: 18px;
+  }
+}
