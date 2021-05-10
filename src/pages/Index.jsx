@@ -10,19 +10,20 @@ import Footer from "../components/Footer";
 import { Helmet } from "react-helmet";
 import Spinner from "../components/Spinner";
 import ContainerCards from "../components/ContainerCards";
+import Paginacio from "../components/Paginacio";
 import { animateScroll as scroll } from "react-scroll";
 import KeyboardArrowUpOutlinedIcon from "@material-ui/icons/KeyboardArrowUpOutlined";
 
 class Index extends Component {
   constructor(props) {
     super();
-    console.log(props);
+
     this.state = {
       productes: [],
       infoProductes: [],
       infoFamilies: [],
       filtrat: false,
-      codiFam: "",
+      codiFam: "tots",
       infoFiltrat: [],
       famDesc: "",
       carregant: true,
@@ -34,10 +35,17 @@ class Index extends Component {
       infoMarca: [],
       infoModel: [],
       producteFiltre: "",
+      totalPagines: "",
+      paginaActual: 1,
+      productesPerPagina: 12,
+      tipus: "tots",
     };
 
     this.filtrar = this.filtrar.bind(this);
     this.scrollToTop = this.scrollToTop.bind(this);
+    this.paginacio_next = this.paginacio_next.bind(this);
+    this.paginacio = this.paginacio.bind(this);
+    this.canviarProductesPerPagina = this.canviarProductesPerPagina.bind(this);
 
     if (props != null) {
       if (props.match.params.codiFam != null) {
@@ -46,6 +54,10 @@ class Index extends Component {
         this.state.carregant = false;
         this.state.carregantFiltres = true;
         sessionStorage.setItem("codiFam", props.match.params.codiFam);
+      }
+
+      if (props.match.params.familia != null) {
+        this.state.tipus = props.match.params.familia;
       }
     } else {
       this.state.carregant = true;
@@ -56,7 +68,7 @@ class Index extends Component {
     scroll.scrollToTop();
   }
 
-  //Agafar la descripció de Familia a partir del codi.
+  //Agafar la descripció de Familia, Gamma, Marca, o model a partir del codi.
   trobarFam(tipus) {
     if (tipus === "familia") {
       for (var x = 0; x < this.state.infoFamilies.length; x++) {
@@ -66,7 +78,7 @@ class Index extends Component {
           return this.state.infoFamilies[x]["descripcio"];
         }
       }
-    } 
+    }
 
     if (tipus === "marca") {
       for (var x = 0; x < this.state.infoMarca.length; x++) {
@@ -105,10 +117,11 @@ class Index extends Component {
     this.actualitzar();
   }
 
+  //Peticions de token, de refreshToken, de articles(filtrar per Familia o Ordenat) i de Families d'articles.
   async actualitzar() {
-    //Peticions de token, de refreshToken, de articles(filtrar per Familia o Ordenat) i de Families d'articles.
     const lang = localStorage.getItem("idioma");
 
+    //TOKEN
     const res = await axios.get(
       `${process.env.REACT_APP_API_DOMAIN}/api/auth?user=${process.env.REACT_APP_USER}&pass=${process.env.REACT_APP_PASSWORD}`,
       {}
@@ -119,6 +132,7 @@ class Index extends Component {
     localStorage.setItem("token", token.token);
     localStorage.setItem("tokenType", token.tokenType);
 
+    //REFRESH TOKEN
     const resp = await axios({
       method: "post",
       url: `${process.env.REACT_APP_API_DOMAIN}/api/auth/refresh`,
@@ -139,6 +153,7 @@ class Index extends Component {
     const tokenRefresh = resp.data;
     localStorage.setItem("resposta", tokenRefresh.token);
 
+    //FAMILIES
     const resFam = await axios.get(
       `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articlesFamilia?page=0&size=100&lang=${lang}&sort=descripcio,ASC`,
       {
@@ -152,6 +167,7 @@ class Index extends Component {
 
     const families = resFam.data;
 
+    //GAMMES
     const resGam = await axios.get(
       `${process.env.REACT_APP_API_DOMAIN}/api/ecom/articlesGamma?page=0&size=100&lang=${lang}&sort=descripcio,ASC`,
       {
@@ -169,6 +185,7 @@ class Index extends Component {
       });
     }
 
+    //MARQUES
     const resMarca = await axios.get(
       `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articlesMarca?page=0&size=100&lang=${lang}&sort=descripcio,ASC`,
       {
@@ -186,6 +203,7 @@ class Index extends Component {
       });
     }
 
+    //MODELS
     const resModel = await axios.get(
       `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/articlesModel?page=0&size=100&lang=${lang}&sort=descripcio,ASC`,
       {
@@ -211,6 +229,7 @@ class Index extends Component {
       this.setState({ filtrat: false });
     }
 
+    //ARTICLES
     const respFiltrat = await axios.get(
       process.env.REACT_APP_API_DOMAIN + "/api/ecomfront/articles",
       {
@@ -219,8 +238,8 @@ class Index extends Component {
             (this.state.filtrat
               ? `${this.props.match.params.familia}.codi=ic=${this.state.codiFam};`
               : "") + `bloquejat==false`,
-          page: 0,
-          size: 100,
+          page: this.state.paginaActual - 1,
+          size: this.state.productesPerPagina,
           lang: lang,
           sort: this.state.orderCol + "," + this.state.orderDir,
         },
@@ -243,32 +262,26 @@ class Index extends Component {
       this.setState({
         productes: productesFiltrats._embedded.articles,
         infoFiltrat: productesFiltrats._embedded.articles,
+        totalPagines: productesFiltrats.page.totalPages,
+        paginaActual: productesFiltrats.page.number + 1,
         carregant: false,
         carregantFiltres: false,
       });
     }
   }
 
+  //FILTRAR
   async filtrar(codi, familia, columna, direccio) {
+    this.setState({ codiFam: codi, tipus: familia });
     const lang = localStorage.getItem("idioma");
     this.setState({ productes: [] });
     let fil;
-    // let col = "descripcioCurta";
-    //let dir ="ASC";
 
     if (codi === "tots") {
       fil = false;
     } else {
       fil = true;
     }
-
-    /* if(columna !== "null"){
-      col = columna;
-    }
-
-    if(direccio !== "null"){
-      dir = direccio;
-    }*/
 
     this.setState({ filtres: fil, carregantFiltres: true });
 
@@ -280,7 +293,7 @@ class Index extends Component {
             (codi !== "tots" ? `${familia}.codi=ic=${codi};` : "") +
             `bloquejat==false`,
           page: 0,
-          size: 100,
+          size: this.state.productesPerPagina,
           lang: lang,
           sort: columna + "," + direccio,
         },
@@ -302,13 +315,129 @@ class Index extends Component {
       this.setState({
         productes: productesFiltrats._embedded.articles,
         infoFiltrat: productesFiltrats._embedded.articles,
+        totalPagines: productesFiltrats.page.totalPages,
+        paginaActual: productesFiltrats.page.number + 1,
         carregantFiltres: false,
       });
     }
-
-    this.setState({});
   }
 
+  //PPAGINACIÓ NEXT
+
+  async paginacio_next(pag) {
+    const lang = localStorage.getItem("idioma");
+
+    const paginacioNext = await axios.get(
+      process.env.REACT_APP_API_DOMAIN + "/api/ecomfront/articles",
+      {
+        params: {
+          query:
+            (this.state.codiFam !== "tots"
+              ? `${this.state.tipus}.codi=ic=${this.state.codiFam};`
+              : "") + `bloquejat==false`,
+          page:
+            pag === "next"
+              ? this.state.paginaActual
+              : this.state.paginaActual - 2,
+          size: this.state.productesPerPagina,
+          lang: lang,
+
+          sort: this.state.orderCol + "," + this.state.orderDir,
+        },
+        headers: {
+          Authorization: `${localStorage.getItem(
+            "tokenType"
+          )} ${localStorage.getItem("resposta")}`,
+        },
+      }
+    );
+
+    const productesFiltrats = paginacioNext.data;
+
+    this.setState({
+      productes: productesFiltrats._embedded.articles,
+      infoFiltrat: productesFiltrats._embedded.articles,
+      totalPagines: productesFiltrats.page.totalPages,
+      paginaActual: productesFiltrats.page.number + 1,
+    });
+  }
+
+   //CANVIAR RPRODUCTE PER PÀGINA
+   async canviarProductesPerPagina(num) {
+    this.setState({ productesPerPagina: num });
+    const lang = localStorage.getItem("idioma");
+
+    const paginacioNext = await axios.get(
+      process.env.REACT_APP_API_DOMAIN + "/api/ecomfront/articles",
+      {
+        params: {
+          query:
+            (this.state.codiFam !== "tots"
+              ? `${this.state.tipus}.codi=ic=${this.state.codiFam};`
+              : "") + `bloquejat==false`,
+          page: 0,
+          size: num,
+          lang: lang,
+
+          sort: this.state.orderCol + "," + this.state.orderDir,
+        },
+        headers: {
+          Authorization: `${localStorage.getItem(
+            "tokenType"
+          )} ${localStorage.getItem("resposta")}`,
+        },
+      }
+    );
+
+    const productesFiltrats = paginacioNext.data;
+
+    this.setState({
+      productes: productesFiltrats._embedded.articles,
+      infoFiltrat: productesFiltrats._embedded.articles,
+      totalPagines: productesFiltrats.page.totalPages,
+      paginaActual: productesFiltrats.page.number + 1,
+    });
+    
+  }
+
+  //PAGINACIO NUM
+
+  async paginacio(num_pag) {
+    const lang = localStorage.getItem("idioma");
+
+    const paginacioNext = await axios.get(
+      process.env.REACT_APP_API_DOMAIN + "/api/ecomfront/articles",
+      {
+        params: {
+          query:
+            (this.state.codiFam !== "tots"
+              ? `${this.state.tipus}.codi=ic=${this.state.codiFam};`
+              : "") + `bloquejat==false`,
+          page: num_pag,
+          size: this.state.productesPerPagina,
+          lang: lang,
+
+          sort: this.state.orderCol + "," + this.state.orderDir,
+        },
+        headers: {
+          Authorization: `${localStorage.getItem(
+            "tokenType"
+          )} ${localStorage.getItem("resposta")}`,
+        },
+      }
+    );
+
+    const productesFiltrats = paginacioNext.data;
+
+    this.setState({
+      productes: productesFiltrats._embedded.articles,
+      infoFiltrat: productesFiltrats._embedded.articles,
+      totalPagines: productesFiltrats.page.totalPages,
+      paginaActual: productesFiltrats.page.number + 1,
+    });
+  }
+
+ 
   render() {
     let codiFam = "tots";
     let tipus = "";
@@ -488,6 +617,21 @@ class Index extends Component {
                       </div>
                     </div>
                   </div>
+                  <div className="col-3 col-md-2 col-lg-1">
+                    <div className="select">
+                      <select
+                        className="custom-select input customSelect"
+                        defaultValue="12"
+                        onChange={(e) =>
+                          this.canviarProductesPerPagina(e.target.value)
+                        }
+                      >
+                        <option value="8">8</option>
+                        <option value="12">12</option>
+                        <option value="24"> 24</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
                 {this.state.carregantFiltres ? (
@@ -510,13 +654,25 @@ class Index extends Component {
                     </Link>
                   </div>
                 ) : (
-                  <ContainerCards
-                    productes={this.state.productes}
-                    afegirCistella={that.props.afegirCistella}
-                    codiF={codiFam}
-                    filtrar={this.filtrar}
-                    canviarEstat={this.canviarEstatOrdenar}
-                  />
+                  <>
+                    <ContainerCards
+                      productes={this.state.productes}
+                      afegirCistella={that.props.afegirCistella}
+                      codiF={codiFam}
+                      filtrar={this.filtrar}
+                      canviarEstat={this.canviarEstatOrdenar}
+                    />
+                    <div className="row mt-5 m-0 justify-content-center">
+                      <div className="col-auto">
+                        <Paginacio
+                          totalPagines={this.state.totalPagines}
+                          paginaActual={this.state.paginaActual}
+                          pagNext={this.paginacio_next}
+                          paginacio={this.paginacio}
+                        />
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             </div>

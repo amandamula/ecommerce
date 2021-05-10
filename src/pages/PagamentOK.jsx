@@ -8,6 +8,8 @@ import Footer from "../components/Footer";
 import en from "../traduccions/en.json";
 import ca from "../traduccions/ca.json";
 import es from "../traduccions/es.json";
+import { email } from "../components/EmailComprador";
+import { emailVenedor } from "../components/EmailVenedor";
 
 class Pag extends Component {
   constructor(props) {
@@ -37,10 +39,9 @@ class Pag extends Component {
     return this.state.idiomes[lang][string];
   }
 
-
   /* POST de brestres i de caixes moviment, canviam l'estat del Pressupost a ACCEPTAT.
   Feim un GET per tenir l'informació de les linies del pressupost i enviam 2 E-mails, 
-  un al comprador i l'altre al venedor.*/ 
+  un al comprador i l'altre al venedor.*/
 
   async componentDidMount() {
     const params = new URLSearchParams(this.props.location.search);
@@ -53,7 +54,7 @@ class Pag extends Component {
     if (pressupost !== null) {
       if (pressupost["estat"] === "PENDENT") {
         if (pressupost["codi"] == pedido) {
-          /*await axios({
+          await axios({
             method: "post",
             url: `${process.env.REACT_APP_API_DOMAIN}/api/ecom/bestretes`,
             data: {
@@ -105,7 +106,7 @@ class Pag extends Component {
                 "tokenType"
               )} ${localStorage.getItem("resposta")}`,
             },
-          });*/
+          });
 
           const obj = JSON.parse(sessionStorage.getItem("pressupost"));
           obj.estat = "ACCEPTAT";
@@ -123,7 +124,6 @@ class Pag extends Component {
             },
           });
 
-
           this.setState({ pagamentOK: true });
 
           const pressupostLinies = await axios.get(
@@ -138,271 +138,107 @@ class Pag extends Component {
           );
 
           const linies = pressupostLinies.data._embedded.pressupostLinias;
+          const prov =
+            pressupost.provincia === undefined
+              ? ""
+              : pressupost.provincia.description;
+          const cp =
+            pressupost.codiPostal === undefined
+              ? ""
+              : pressupost.codiPostal.description;
 
+          const em = email(
+            this.traduir("email.ok"),
+            this.traduir("email.hola"),
+            pressupost["nomFiscal"],
+            this.traduir("email.gracias"),
+            this.traduir("email.numero"),
+            pressupost.email,
+            preu,
+            pedido,
+            this.traduir("formulari.usuari"),
+            pressupost["nif"],
+            pressupost.telefon,
+            pressupost.tipusAdresa.description,
+            linies,
+            pressupost["pais"]["description"],
+            prov,
+            cp,
+            pressupost.nomDomicili,
+            pressupost.numeroDomicili,
+            pressupost.pisDomicili,
+            pressupost.escalaDomicili,
+            pressupost.portaDomicili,
+            this.traduir("email.confianza")
+          );
 
-          const headCorreuComprador = `<div class="container">
-          <div class="row text-center">
-              <div class="col-sm-6 col-sm-offset-3">        				
-                  <h2 style="color:#0fad00">${this.traduir("email.ok")}</h2>
-                  <h3>${
-                    this.traduir("email.hola") + " " + pressupost["nomFiscal"]
-                  }</h3>		 		 
-                  <p style="font-size:20px;color:#5C5C5C;">${this.traduir(
-                    "email.gracias"
-                  )}</p>
-                  <p style="font-size:15px;color:#5C5C5C;">EMBUTIDOS AGUILÓ, S.L. <br/>
-                      Avenida de Asturias, 4-A <br/>
-                      07100-Soller (Illes Balears) <br/>
-                      Nif:B-07002827 <br/>
-                      Telf (34) 971630168 <br/>
-                      Email:laluna@la-luna.es <br/></p>
-              </div>
-          </div>
-      </div>`;
-
-          const headerVenedor = `<div class="container">
-			<div class="row text-center">
-				<div class="col-sm-6 col-sm-offset-3">       				
-					<h2 style="color:#0fad00">${this.traduir("email.venedor")}</h2>				
-				</div>
-			</div>
-		</div>`;
-
-          const bodyCorreu = `<div class="container">
-      <div class="row text-center">
-         <div class="col-sm-6 col-sm-offset-3">
-           <p style="font-size:20px;color:#5C5C5C;">${
-             this.traduir("email.gestionado") + " " + pedido
-           }</p>											
-         </div>
-      </div>
-  </div>			
-  
-  <div class="container">
-      <div class="row text-center">
-         <div class="col-sm-6 col-sm-offset-3">
-            <p style="font-size:20px;color:#5C5C5C;">${this.traduir(
-              "formulari.usuari"
-            )}</p>
-          </div>
-      </div>
-  </div>		
-  
-  <table style="width: 100%; border: 1px solid black;">
-      <thead>
-         <tr style="border: 1px solid black;">
-              <th style ="font-weight: bold; text-align: left;"> ${this.traduir(
-                "formulari.nom"
-              )} </th>
-              <th style ="font-weight: bold; text-align: left;">${this.traduir(
-                "formulari.tipusDoc"
-              )} </th>					
-              <th style ="font-weight: bold; text-align: left;">${this.traduir(
-                "formulari.paisNif"
-              )}</th> 
-              <th style ="font-weight: bold; text-align: left;">${this.traduir(
-                "formulari.numDoc"
-              )}</th>
-          </tr>
-      </thead>
-      <tbody>
-         <tr>
-          <td style="text-align: left;">${pressupost.nomComercial}</td>
-          <td style="text-align: left;">${pressupost["tipusNif"]}</td>					 
-          <td style="text-align: left;">${
-            pressupost["paisNif"]["description"]
-          }</td>
-          <td style="text-align: left;">${pressupost["nif"]}</td> 
-         </tr>
-         
-      </tbody>	
-      <thead>
-         <tr style="border: 1px solid black;">
-            <th style ="font-weight: bold; text-align: left;">${this.traduir(
+          const emVenedor = emailVenedor(
+            this.traduir("email.venedor"),
+            this.traduir("email.numero"),
+            preu,
+            pedido,
+            linies,
+            this.traduir("formulari.usuari"),
+            pressupost["nif"],
+            pressupost.telefon,
+            pressupost.tipusAdresa.description,
+            pressupost["pais"]["description"],
+            prov,
+            cp,
+            pressupost.nomDomicili,
+            pressupost.numeroDomicili,
+            pressupost.pisDomicili,
+            pressupost.escalaDomicili,
+            pressupost.portaDomicili,
+            pressupost["nomFiscal"],
+            pressupost.email,
+            this.traduir(
+              "formulari.nom"
+            ),
+            this.traduir(
+              "formulari.numDoc"
+            ),
+            this.traduir(
               "formulari.pais"
-            )} </th>
-            <th style ="font-weight: bold; text-align: left;">${this.traduir(
+            ),
+            this.traduir(
               "formulari.provincia"
-            )} </th>
-            <th style ="font-weight: bold; text-align: left;">${this.traduir(
+            ),
+            this.traduir(
               "formulari.poblacio"
-            )} </th>         
-         </tr>
-      </thead>
-      <tbody>
-         <tr>
-            <td style="text-align: left;">${
-              pressupost["pais"]["description"]
-            } </td>
-            <td style="text-align: left;">${
-              pressupost.provincia === undefined
-                ? ""
-                : pressupost.provincia.description
-            } </td>
-            <td style="text-align: left;">${
-              pressupost.codiPostal === undefined
-                ? ""
-                : pressupost.codiPostal.description
-            } </td>     
-          </tr>
-         
-   </tbody>
-   <thead>
-         <tr style="border: 1px solid black;">
-            <th style ="font-weight: bold; text-align: left;">${this.traduir(
+            ),
+            this.traduir(
               "formulari.via"
-            )}</th>
-            <th style ="font-weight: bold; text-align: left;">${this.traduir(
+            ),
+            this.traduir(
               "formulari.domicili"
-            )} </th>
-            <th style ="font-weight: bold; text-align: left;">${this.traduir(
-              "formulari.num"
-            )}</th>        
-            <th style ="font-weight: bold; text-align: left;">${this.traduir(
+            ),
+            this.traduir(
               "formulari.escala"
-            )}</th>
-            <th style ="font-weight: bold; text-align: left;">${this.traduir(
+            ),
+            this.traduir(
               "formulari.pis"
-            )}</th>
-            <th style ="font-weight: bold; text-align: left;">${this.traduir(
+            ),
+            this.traduir(
               "formulari.porta"
-            )} </th>
-          </tr> 
-  </thead>
-  <tbody>
-      <tr>
-          <td style="text-align: left;">${
-            pressupost.tipusAdresa.description
-          }</td>
-          <td style="text-align: left;">${pressupost.nomDomicili}  </td>
-          <td style="text-align: left;">${pressupost.numeroDomicili}  </td>
-          <td style="text-align: left;">${
-            pressupost.escalaDomicili === undefined
-              ? ""
-              : pressupost.escalaDomicili
-          }  </td>
-          <td style="text-align: left;">${
-            pressupost.pisDomicili === undefined ? "" : pressupost.pisDomicili
-          } </td>
-          <td style="text-align: left;">${
-            pressupost.portaDomicili === undefined
-              ? ""
-              : pressupost.portaDomicili
-          } </td>
-  
-      </tr>
-       
-  </tbody>
-  <thead>
-       <tr style="border: 1px solid black;">
-          <th style ="font-weight: bold; text-align: left;">${this.traduir(
-            "formulari.email"
-          )}</th>
-          <th style ="font-weight: bold; text-align: left;">${this.traduir(
-            "formulari.emailFactura"
-          )}</th>
-          <th style ="font-weight: bold; text-align: left;">${this.traduir(
-            "formulari.telefono"
-          )}</th>       
-       </tr>
-    </thead>
-    <tbody>
-       <tr>
-          <td style="text-align: left;">${pressupost.email}</td>
-          <td style="text-align: left;">${pressupost.emailFactura}</td>
-          <td style="text-align: left;">${pressupost.telefon}</td>      
-       </tr>
-    </tbody>
-</table>
-<br/>	
- 
-<div class="container">
-    <div class="row text-center">
-     <div class="col-sm-6 col-sm-offset-3">       
-         <p style="font-size:20px;color:#5C5C5C;">${this.traduir(
-           "formulari.pedido"
-         )}</p>
-       </div>
-    </div>
-</div>
- 
-<table style="width: 100%; border: 1px solid black;">
- <thead>
-    <tr style="border: 1px solid black;">
-        <th style ="font-weight: bold; text-align: left;">${this.traduir(
-          "formulari.articles"
-        )}</th>
-        <th style ="font-weight: bold; text-align: right;">${this.traduir(
-          "formulari.preu"
-        )}</th>
-        <th style ="font-weight: bold;text-align: center;">${this.traduir(
-          "formulari.unitats"
-        )}</th>
-        <th style ="font-weight: bold; text-align: right;">${this.traduir(
-          "carrito.total"
-        )}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      `;
+            ),
+            this.traduir(
+              "formulari.numDom"
+            ),
+            this.traduir(
+              "formulari.email"
+            ),
+            this.traduir(
+              "formulari.telefono"
+            )
 
-          const footerCorreuClient = `<div class="container">
-      <div class="row text-center">
-         <div class="col-sm-6 col-sm-offset-3">
-         <p style="font-size:20px;color:#5C5C5C;">${this.traduir(
-           "email.confianza"
-         )}</p>			
-       </div>
-      </div>
-  </div>`;
-
-          let liniesCorreu = ``;
-          console.log(linies);
-
-          for (var i = 0; i < linies.length; i++) {
-            console.log(linies);
-
-            liniesCorreu =
-              liniesCorreu +
-              `<td>${
-                linies[i].descripcio
-              }</td><td style="text-align: right;">${linies[
-                i
-              ].preuAmbIva.toFixed(2)} € </td>
-        <td style="text-align: center;">${linies[i].unitats}</td> `;
-
-            var totalPerProducte = linies[i].unitats * linies[i].preuAmbIva;
-
-            liniesCorreu =
-              liniesCorreu +
-              `<td style="text-align: right;">${parseFloat(
-                totalPerProducte.toString()
-              ).toFixed(2)} € </td>`;
-
-            if (i < linies.length - 1) {
-              liniesCorreu = liniesCorreu + `</tr><tr>`;
-            }
-          }
-          liniesCorreu = liniesCorreu + `</tr>`;
-          liniesCorreu = liniesCorreu + `<tr></tr><tr></tr>`;
-          liniesCorreu =
-            liniesCorreu +
-            `<tr><td style ="font-weight: bold;"><h2>${this.traduir(
-              "carrito.total"
-            )}:</h2></td><td></td><td></td><td style ="font-weight: bold;text-align: right;"><h2>${preu.toFixed(
-              2
-            )} €</h2></td></tr></tbody></table>`;
+          );
 
           await axios({
             method: "post",
             url: `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/sendEmail/send`,
             data: {
-              body:
-                headCorreuComprador +
-                bodyCorreu +
-                liniesCorreu +
-                footerCorreuClient,
+              body: em,
               htmlBody: true,
               subject: `${this.traduir("email.ok")}: ${pedido}`,
               to: `${pressupost.emailFactura}`,
@@ -419,7 +255,7 @@ class Pag extends Component {
             method: "post",
             url: `${process.env.REACT_APP_API_DOMAIN}/api/ecomfront/sendEmail/send`,
             data: {
-              body: headerVenedor + bodyCorreu + liniesCorreu,
+              body: emVenedor,
               htmlBody: true,
               subject: `${this.traduir("email.ok")}: ${pedido}`,
               to: "amula@limit.es",
@@ -444,16 +280,11 @@ class Pag extends Component {
             email: pressupost["emailFactura"],
           });
         } else {
-
-          this.setState({ pagamentOK: false, carregant :false });
+          this.setState({ pagamentOK: false, carregant: false });
         }
-       
-      
       }
-    
     }
-    this.setState({ carregant :false });
-
+    this.setState({ carregant: false });
   }
   render() {
     if (this.state.carregant) {
@@ -464,11 +295,11 @@ class Pag extends Component {
             count={this.props.count}
           />
           <div className="container margeCarregant">
-          <div className="text-center text-primary mt-5">
-            <div className="spinner-border" role="status">
-              <span className="sr-only">Loading...</span>
+            <div className="text-center text-primary mt-5">
+              <div className="spinner-border" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
             </div>
-          </div>
           </div>
         </div>
       );

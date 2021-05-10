@@ -11,6 +11,7 @@ import Formulari from './pages/Formulari';
 import PagamentOK from './pages/PagamentOK';
 import PagamentKO from './pages/PagamentKO';
 import FormulariRegistre from './pages/FormulariRegistre';
+import IniciSessio from './pages/IniciSessio';
 
 import $ from 'jquery';
 
@@ -231,8 +232,9 @@ class App extends Component {
             <Route exact path="/pedido/:pagament" render={() => <Formulari key={"Formulari-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total}  productes={this.state.productes} />} />
             <Route exact path="/urlok" render={() => <PagamentOK key={"PagamentOk-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
             <Route exact path="/urlko" render={() => <PagamentKO key={"PagamentKo-" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge} afegirCistella={this.afegirCistella} contador={this.actualizarContador} eliminar={this.borrarProducte} eliminarTots={this.borrarTot} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} />
-            <Route exact path="/registre" render={() => <FormulariRegistre key={"FormulariRegistre" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge}  contador={this.actualizarContador} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} />} /> 
-           
+            <Route exact path="/registro" render={() => <FormulariRegistre key={"FormulariRegistre" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge}  contador={this.actualizarContador} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} productes={this.state.productes} />} /> 
+            <Route exact path="/inicio-sesion" render={() => <IniciSessio key={"IniciSessio" + this.state.llenguatge} canviarLlenguatge={this.canviarLlenguatge}  contador={this.actualizarContador} calcularTotal={this.calcularTotal} count={this.state.carritoCount} total={this.state.total} productes={this.state.productes} />} /> 
+
  
  
           </Switch>

@@ -167,7 +167,6 @@ class FormulariPedido extends Component {
     this.setState({
       [id + "2"]: valor,
     });
-    console.log(valor.target);
   }
 
   // feim la validació de formulari i si és vàlid, feim el SUBMIT.
@@ -321,10 +320,12 @@ class FormulariPedido extends Component {
       } catch (error) {
         var fallo = JSON.parse(error.request.responseText);
 
-        console.log(fallo.errors);
         if (fallo.errors[0].code == "DocumentIdentitat") {
           $("#numDocument").css("border", "1px solid red");
           $(".dni .invalid-feedback").css("display", "inherit");
+        } else {
+          $("#numDocument").css("border", "1px solid #28a745");
+          $(".dni .invalid-feedback").css("display", "none");
         }
       }
 

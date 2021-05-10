@@ -86,7 +86,7 @@ class List extends Component {
                
                 }}
                 onClick={() =>
-                  that.props.filtrar("tots", "descripcioCurta", "ASC")
+                  that.props.filtrar("tots","tots", "descripcioCurta", "ASC")
                 }
               >
                 <Traduccio string="list.productos" />

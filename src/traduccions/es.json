@@ -71,6 +71,7 @@
     "email.gestionado" : "Pedido gestionado correctamente con número:",
     "email.confianza" : "Agradecemos mucho su confianza en nosotros",
     "email.venedor" :  "Un cliente ha realizado un nuevo pedido",
+    "email.numero": "Número de pedido",
     "urlok.ok" : "Pedido realizado con éxito",
     "urlok.pedido" : "Pedido gestionado correctamente con número: ",
     "urlok.correu": "Recibira un correo de la confirmación de su pago en: " ,
@@ -84,7 +85,15 @@
     "correu.confirmarCompte" : "Confirmar Cuenta", 
     "correu.correcte": ", el registro se ha realizado correctamente con el email: ",
     "registre.ok": "Se ha registrado correctamente. ",
-    "registre.compr": "Recibirá un correo de confirmación a: "
+    "registre.compr": "Recibirá un correo de confirmación a: ",
+    "registre.email": "Este e-mail ya está registrado.",
+    "inici.email" : "E-mail",
+    "inici.contrasenya": "Contraseña",
+    "inici.inici" : "Iniciar sesión",
+    "inici.registre": "Regístrate",
+    "inici.text1": "Si aún no tienes cuenta de usuario, utiliza esta opción para acceder al formulario de registro. ",
+    "inici.error" : "El e-mail o contraseña son incorrectos",
+    "registre.compte" :"Ya estas registrado?"
 
 
 

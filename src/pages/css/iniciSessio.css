@@ -1,0 +1,25 @@
+.margeContainer{
+    margin-top: 80px !important;
+}
+.titolInici{
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.desc{
+    margin-top:30px !important;
+    
+}
+
+.input-group-text{
+    background-color: white;
+    color:#790726;
+    border-left: none;
+    border-top-right-radius: 0.25rem !important;
+    border-bottom-right-radius: 0.25rem !important;
+}
+
+.inputBorder{
+    border-right: none !important;
+}
+

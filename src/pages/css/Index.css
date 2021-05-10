@@ -19,3 +19,8 @@
 .noCoincidencies{
     margin-top : 150px !important;
 }
+
+.customSelect{
+    border-color: #790726 !important;
+    color: #790726 !important
+}

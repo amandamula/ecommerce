@@ -73,14 +73,19 @@ a:hover:after {
   animation: swing ease-in-out .1s 4 alternate;
 
 }
-.swing{
-
-  color:black;
-}
 
 .swing:hover {
   transform: rotate(3deg);
 
+}
+
+.botoDrop{
+  color: #790726 !important;
+}
+
+
+.correuSessio{
+  font-size: 16px;
 }
 
 
